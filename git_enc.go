@@ -4,12 +4,9 @@ import (
 	"log"
 )
 
-type SSHFSParams struct {
-}
-
 type ProcHandler interface {
-	Start()
-	Stop()
+	Start() error
+	Stop() error
 }
 
 func MountSSHFS() ProcHandler {
