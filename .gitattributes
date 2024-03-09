@@ -1,0 +1,6 @@
+# Golang files
+*.go text eol=lf
+*.mod text eol=lf
+
+# Text files
+*.md text eol=lf
