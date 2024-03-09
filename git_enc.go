@@ -2,6 +2,9 @@ package main
 
 import (
 	"log"
+	"time"
+
+	"github.com/Parad0xpl/git_enc/v2/windows"
 )
 
 type ProcHandler interface {
@@ -9,16 +12,25 @@ type ProcHandler interface {
 	Stop() error
 }
 
-func MountSSHFS() ProcHandler {
+func MountSSHFS() (ProcHandler, error) {
 	log.Println("---[SSHFS Mount]---")
 
-	return nil
+	handle := windows.CreateSSHFS()
+	handle.Start()
+
+	return handle, nil
 }
 
-func MountVeraCrypt() ProcHandler {
+func MountVeraCrypt() (ProcHandler, error) {
 	log.Println("---[VeraCrypt Mount]---")
 
-	return nil
+	handle := windows.CreateVeraCrypt()
+	err := handle.Start()
+	if err != nil {
+		return nil, err
+	}
+
+	return handle, nil
 }
 
 func DismountSSHFS(handle ProcHandler) {
@@ -31,18 +43,25 @@ func DismountVeraCrypt(handle ProcHandler) {
 	handle.Stop()
 }
 
-func PushChanges() {}
+func PushChanges() {
+	time.Sleep(10 * time.Second)
+}
 
 func Main() error {
 	GetConfig()
 
-	sshHandle := MountSSHFS()
-	veraHandle := MountVeraCrypt()
+	sshHandle, err := MountSSHFS()
+	if err != nil {
+		return err
+	}
+	defer DismountSSHFS(sshHandle)
+	veraHandle, err := MountVeraCrypt()
+	if err != nil {
+		return err
+	}
+	defer DismountVeraCrypt(veraHandle)
 
 	PushChanges()
-
-	DismountVeraCrypt(veraHandle)
-	DismountSSHFS(sshHandle)
 
 	return nil
 }

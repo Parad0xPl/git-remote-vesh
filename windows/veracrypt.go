@@ -1,23 +1,29 @@
 package windows
 
+import (
+	"fmt"
+	"os"
+	"os/exec"
+)
+
 type VeraCryptWinHandle struct {
 	mountLetter string
 	valuePath   string
 }
 
-const defaultPath = "C:\\Program Files\\VeraCrypt\\VeraCrypt.exe"
+const defautVeraCryptPath = "C:\\Program Files\\VeraCrypt\\VeraCrypt.exe"
 
-func getExecPath() string {
+func getVeraCryptExecPath() string {
 	path, _ := exec.LookPath("VeraCrypt")
 
 	if path == "" {
-		path = defaultPath
+		path = defautVeraCryptPath
 	}
 
 	return path
 }
 
-func createWinVeraCrypt() *VeraCryptWinHandle {
+func CreateVeraCrypt() *VeraCryptWinHandle {
 
 	return &VeraCryptWinHandle{
 		mountLetter: "A",
@@ -26,7 +32,7 @@ func createWinVeraCrypt() *VeraCryptWinHandle {
 }
 
 func (s *VeraCryptWinHandle) Start() error {
-	path := getExecPath()
+	path := getVeraCryptExecPath()
 
 	if _, err := os.Stat(path); err != nil {
 		return fmt.Errorf("can't find veracrypt executable: %s", err)
@@ -42,8 +48,9 @@ func (s *VeraCryptWinHandle) Start() error {
 			s.valuePath,
 		}
 
-	s.cmd = exec.Command(path, arguments...)
-	err = s.Run()
+	cmd := exec.Command(path, arguments...)
+	_, err := cmd.Output()
+	// log.Printf("Output: %s\n", string(output))
 	if err != nil {
 		return fmt.Errorf("can't start veracrypt executable: %s", err)
 	}
@@ -64,8 +71,9 @@ func (s *VeraCryptWinHandle) Stop() error {
 			s.mountLetter,
 		}
 
-	s.cmd = exec.Command(path, arguments...)
-	err = s.Run()
+	cmd := exec.Command(path, arguments...)
+	_, err := cmd.Output()
+	// log.Println(string(output))
 	if err != nil {
 		return fmt.Errorf("can't start veracrypt executable: %s", err)
 	}
