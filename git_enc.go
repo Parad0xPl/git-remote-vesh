@@ -2,9 +2,9 @@ package main
 
 import (
 	"log"
-	"time"
 
 	"github.com/Parad0xpl/git_enc/v2/config"
+	"github.com/Parad0xpl/git_enc/v2/helper"
 	"github.com/Parad0xpl/git_enc/v2/windows"
 )
 
@@ -44,10 +44,6 @@ func DismountVeraCrypt(handle ProcHandler) {
 	handle.Stop()
 }
 
-func PushChanges() {
-	time.Sleep(10 * time.Second)
-}
-
 func Main() error {
 	config, err := config.GetConfig()
 	if err != nil {
@@ -65,7 +61,10 @@ func Main() error {
 	}
 	defer DismountVeraCrypt(veraHandle)
 
-	PushChanges()
+	err = helper.Loop()
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
