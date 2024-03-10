@@ -59,7 +59,7 @@ func (s *VeraCryptWinHandle) Start() error {
 }
 
 func (s *VeraCryptWinHandle) Stop() error {
-	path := getExecPath()
+	path := getVeraCryptExecPath()
 
 	if _, err := os.Stat(path); err != nil {
 		return fmt.Errorf("can't find veracrypt executable: %s", err)

@@ -17,7 +17,7 @@ type SshfsWinHandle struct {
 
 const defaultPath = "C:\\Program Files\\SSHFS-Win\\bin\\sshfs.exe"
 
-func getExecPath() string {
+func getSSHFSPath() string {
 	path, _ := exec.LookPath("sshfs")
 
 	if path == "" {
@@ -77,7 +77,7 @@ func CreateSSHFS(config config.SSHFSParams) *SshfsWinHandle {
 }
 
 func (s *SshfsWinHandle) Start() error {
-	path := getExecPath()
+	path := getSSHFSPath()
 
 	if _, err := os.Stat(path); err != nil {
 		return fmt.Errorf("can't find sshfs executable: %s", err)
