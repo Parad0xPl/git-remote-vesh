@@ -6,6 +6,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"time"
+
+	"github.com/Parad0xpl/git_enc/v2/config"
 )
 
 type SshfsWinHandle struct {
@@ -31,15 +33,15 @@ func getExecPath() string {
 	return path
 }
 
-func CreateSSHFS() *SshfsWinHandle {
-	SSHName := "bit_revolver"
-	SSHHost := "parad0x.pl"
-	SSHPath := "/home/bit_revolver"
+func CreateSSHFS(config config.SSHFSParams) *SshfsWinHandle {
+	SSHName := config.SSHUser
+	SSHHost := config.SSHAddress
+	SSHPath := config.SSHRemotePath
 	ssh_login := fmt.Sprintf("%s@%s:%s", SSHName, SSHHost, SSHPath)
-	mount_letter := "Z:"
+	mount_letter := config.SSHMountPath
 	port := fmt.Sprintf("-p%d", 22)
 
-	ident_file := "U:/Documents/Keys/pjatk.key"
+	ident_file := config.SSHIdentityFile
 
 	arguments := []string{
 		ssh_login,
@@ -81,8 +83,8 @@ func (s *SshfsWinHandle) Start() error {
 		return fmt.Errorf("can't find sshfs executable: %s", err)
 	}
 	s.cmd = exec.Command(path, s.args...)
-	s.cmd.Stdout = os.Stdout
-	s.cmd.Stderr = os.Stderr
+	// s.cmd.Stdout = os.Stdout
+	// s.cmd.Stderr = os.Stderr
 
 	s.cmd.Env = []string{
 		fmt.Sprintf("PATH=%s", filepath.Dir(path)),

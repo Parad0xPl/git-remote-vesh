@@ -4,6 +4,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/Parad0xpl/git_enc/v2/config"
 	"github.com/Parad0xpl/git_enc/v2/windows"
 )
 
@@ -12,10 +13,10 @@ type ProcHandler interface {
 	Stop() error
 }
 
-func MountSSHFS() (ProcHandler, error) {
+func MountSSHFS(config config.SSHFSParams) (ProcHandler, error) {
 	log.Println("---[SSHFS Mount]---")
 
-	handle := windows.CreateSSHFS()
+	handle := windows.CreateSSHFS(config)
 	handle.Start()
 
 	return handle, nil
@@ -48,9 +49,12 @@ func PushChanges() {
 }
 
 func Main() error {
-	GetConfig()
+	config, err := config.GetConfig()
+	if err != nil {
+		return err
+	}
 
-	sshHandle, err := MountSSHFS()
+	sshHandle, err := MountSSHFS(config.ExtractSSHFSParams())
 	if err != nil {
 		return err
 	}
