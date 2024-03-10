@@ -39,7 +39,7 @@ func CreateSSHFS(config config.SSHFSParams) *SshfsWinHandle {
 	SSHPath := config.SSHRemotePath
 	ssh_login := fmt.Sprintf("%s@%s:%s", SSHName, SSHHost, SSHPath)
 	mount_letter := config.SSHMountPath
-	port := fmt.Sprintf("-p%d", 22)
+	port := fmt.Sprintf("-p%d", config.SSHPort)
 
 	ident_file := config.SSHIdentityFile
 
