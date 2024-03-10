@@ -22,10 +22,10 @@ func MountSSHFS(config config.SSHFSParams) (ProcHandler, error) {
 	return handle, nil
 }
 
-func MountVeraCrypt() (ProcHandler, error) {
+func MountVeraCrypt(config config.VeraCryptParams) (ProcHandler, error) {
 	log.Println("---[VeraCrypt Mount]---")
 
-	handle := windows.CreateVeraCrypt()
+	handle := windows.CreateVeraCrypt(config)
 	err := handle.Start()
 	if err != nil {
 		return nil, err
@@ -59,7 +59,7 @@ func Main() error {
 		return err
 	}
 	defer DismountSSHFS(sshHandle)
-	veraHandle, err := MountVeraCrypt()
+	veraHandle, err := MountVeraCrypt(config.ExtractVeraCryptParams())
 	if err != nil {
 		return err
 	}

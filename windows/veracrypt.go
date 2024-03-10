@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+
+	"github.com/Parad0xpl/git_enc/v2/config"
 )
 
 type VeraCryptWinHandle struct {
 	mountLetter string
-	valuePath   string
+	vaultPath   string
 }
 
 const defautVeraCryptPath = "C:\\Program Files\\VeraCrypt\\VeraCrypt.exe"
@@ -23,11 +25,10 @@ func getVeraCryptExecPath() string {
 	return path
 }
 
-func CreateVeraCrypt() *VeraCryptWinHandle {
-
+func CreateVeraCrypt(config config.VeraCryptParams) *VeraCryptWinHandle {
 	return &VeraCryptWinHandle{
-		mountLetter: "A",
-		valuePath:   "Z:\\bit_revolver.crypt",
+		mountLetter: config.VeraCryptMountPath,
+		vaultPath:   config.VeraCryptVaultPath,
 	}
 }
 
@@ -45,7 +46,7 @@ func (s *VeraCryptWinHandle) Start() error {
 			s.mountLetter,
 			"/a",
 			"/v",
-			s.valuePath,
+			s.vaultPath,
 		}
 
 	cmd := exec.Command(path, arguments...)
