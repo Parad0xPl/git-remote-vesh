@@ -2,6 +2,7 @@ package helper
 
 import (
 	"fmt"
+	"log"
 	"os"
 )
 
@@ -30,8 +31,10 @@ func (h *helperContext) export() error {
 	}
 
 	for _, el := range afterRefs {
+		log.Printf("Looking for match element %s = %s", el[1], el[0])
 		refname := el[1]
 		if beforeRefsMap[refname] != el[0] {
+			log.Printf(" - Found!!! [%s]", beforeRefsMap[refname])
 			fmt.Printf("ok %s\n", refname)
 		}
 	}

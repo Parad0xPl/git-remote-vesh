@@ -3,6 +3,8 @@ package config
 import (
 	"fmt"
 	"os"
+	"path"
+	"strings"
 
 	"gopkg.in/yaml.v2"
 )
@@ -40,6 +42,8 @@ func GetConfig() (EncConfig, error) {
 		return EncConfig{}, fmt.Errorf("can't read config file: %v", err)
 	}
 	config := EncConfig{}
+	config.RemoteName = os.Args[1]
+	config.RepoPath = os.Args[2]
 	err = yaml.Unmarshal(config_raw, &config)
 	if err != nil {
 		return EncConfig{}, fmt.Errorf("can't parse config file: %v", err)
@@ -47,6 +51,15 @@ func GetConfig() (EncConfig, error) {
 	if config.SSHPort == 0 {
 		config.SSHPort = 22
 	}
+
+	var mountPath string
+	if strings.HasSuffix(config.VeraCryptMountPath, ":") {
+		mountPath = config.VeraCryptMountPath
+	} else {
+		mountPath = config.VeraCryptMountPath + ":"
+	}
+	config.RepoPath = path.Join(mountPath, config.RepoPath)
+
 	return config, nil
 }
 

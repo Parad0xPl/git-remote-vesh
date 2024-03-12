@@ -65,8 +65,6 @@ func Main() error {
 	}
 
 	config, err := config.GetConfig()
-	config.RemoteName = os.Args[1]
-	config.RepoPath = os.Args[2]
 	if err != nil {
 		return err
 	}

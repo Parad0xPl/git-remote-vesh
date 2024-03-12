@@ -9,7 +9,7 @@ import (
 func (h *helperContext) gitCmdPrepare(args ...string) *exec.Cmd {
 	cmd := exec.Command("git", args...)
 	envs := cmd.Environ()
-	envs = append(envs, fmt.Sprintf("GIT_DIT=%s", h.repoPath))
+	envs = append(envs, fmt.Sprintf("GIT_DIR=%s", h.repoPath))
 	cmd.Env = envs
 	return cmd
 }

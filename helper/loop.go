@@ -44,13 +44,7 @@ func ensureFile(path string) error {
 }
 
 func prepare(config config.EncConfig) (helperContext, error) {
-	var mountPath string
-	if strings.HasSuffix(config.VeraCryptMountPath, ":") {
-		mountPath = config.VeraCryptMountPath
-	} else {
-		mountPath = config.VeraCryptMountPath + ":"
-	}
-	repoPath := path.Join(mountPath, config.RepoPath)
+	repoPath := config.RepoPath
 	ctx := helperContext{
 		headRefspec: fmt.Sprintf("refs/heads/*:refs/vesh/%s/heads/*", config.RemoteName),
 		tagRefspec:  fmt.Sprintf("refs/tags/*:refs/vesh/%s/tags/*", config.RemoteName),
