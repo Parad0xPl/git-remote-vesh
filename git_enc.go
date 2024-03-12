@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/Parad0xpl/git_enc/v2/config"
 	"github.com/Parad0xpl/git_enc/v2/helper"
@@ -13,19 +14,28 @@ type ProcHandler interface {
 	Stop() error
 }
 
-func MountSSHFS(config config.SSHFSParams) (ProcHandler, error) {
+func MountSSHFS(config config.EncConfig) (ProcHandler, error) {
 	log.Println("---[SSHFS Mount]---")
 
-	handle := windows.CreateSSHFS(config)
+	if _, err := os.Stat(config.VeraCryptVaultPath); err == nil {
+		log.Println("Vault already found - skipping sshfs mount")
+		return nil, nil
+	}
+	handle := windows.CreateSSHFS(config.ExtractSSHFSParams())
 	handle.Start()
 
 	return handle, nil
 }
 
-func MountVeraCrypt(config config.VeraCryptParams) (ProcHandler, error) {
+func MountVeraCrypt(config config.EncConfig) (ProcHandler, error) {
 	log.Println("---[VeraCrypt Mount]---")
 
-	handle := windows.CreateVeraCrypt(config)
+	if _, err := os.Stat(config.RepoPath); err == nil {
+		log.Println("Repo already found - skipping VeraCrypt mount")
+		return nil, nil
+	}
+
+	handle := windows.CreateVeraCrypt(config.ExtractVeraCryptParams())
 	err := handle.Start()
 	if err != nil {
 		return nil, err
@@ -45,23 +55,30 @@ func DismountVeraCrypt(handle ProcHandler) {
 }
 
 func Main() error {
+	if len(os.Args) != 3 {
+		log.Printf("Usage: %s <remote name> <remote address>\n", os.Args[0])
+		return nil
+	}
+
 	config, err := config.GetConfig()
+	config.RemoteName = os.Args[1]
+	config.RepoPath = os.Args[2]
 	if err != nil {
 		return err
 	}
 
-	sshHandle, err := MountSSHFS(config.ExtractSSHFSParams())
+	sshHandle, err := MountSSHFS(config)
 	if err != nil {
 		return err
 	}
 	defer DismountSSHFS(sshHandle)
-	veraHandle, err := MountVeraCrypt(config.ExtractVeraCryptParams())
+	veraHandle, err := MountVeraCrypt(config)
 	if err != nil {
 		return err
 	}
 	defer DismountVeraCrypt(veraHandle)
 
-	err = helper.Loop()
+	err = helper.Loop(config)
 	if err != nil {
 		return err
 	}

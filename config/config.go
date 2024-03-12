@@ -16,6 +16,8 @@ type EncConfig struct {
 	SSHRemotePath      string `yaml:"ssh_remote_path"`
 	VeraCryptMountPath string `yaml:"veracrypt_mount_path"`
 	VeraCryptVaultPath string `yaml:"veracrypt_vault_path"`
+	RepoPath           string `yaml:"repo_path"`
+	RemoteName         string
 }
 
 type SSHFSParams struct {

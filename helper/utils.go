@@ -1,0 +1,20 @@
+package helper
+
+import (
+	"bytes"
+	"fmt"
+	"os/exec"
+)
+
+func (h *helperContext) gitExec(args ...string) ([]byte, error) {
+	cmd := exec.Command("git", args...)
+	envs := cmd.Environ()
+	envs = append(envs, fmt.Sprintf("GIT_DIT=%s", h.repoPath))
+	cmd.Env = envs
+	return cmd.Output()
+}
+
+func (h *helperContext) gitExecString(args ...string) (string, error) {
+	output, err := h.gitExec(args...)
+	return string(bytes.TrimSpace(output)), err
+}
