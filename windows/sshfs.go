@@ -80,7 +80,7 @@ func (s *SshfsWinHandle) Start() error {
 	path := getSSHFSPath()
 
 	if _, err := os.Stat(path); err != nil {
-		return fmt.Errorf("can't find sshfs executable: %s", err)
+		return fmt.Errorf("can't find sshfs executable: %v", err)
 	}
 	s.cmd = exec.Command(path, s.args...)
 	// s.cmd.Stdout = os.Stdout
@@ -91,7 +91,7 @@ func (s *SshfsWinHandle) Start() error {
 	}
 	err := s.cmd.Start()
 	if err != nil {
-		return fmt.Errorf("can't start sshfs executable: %s", err)
+		return fmt.Errorf("can't start sshfs executable: %v", err)
 	}
 	time.Sleep(time.Second * 2)
 	//TODO Check for error

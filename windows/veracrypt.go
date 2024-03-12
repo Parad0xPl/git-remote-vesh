@@ -36,7 +36,7 @@ func (s *VeraCryptWinHandle) Start() error {
 	path := getVeraCryptExecPath()
 
 	if _, err := os.Stat(path); err != nil {
-		return fmt.Errorf("can't find veracrypt executable: %s", err)
+		return fmt.Errorf("can't find veracrypt executable: %v", err)
 	}
 
 	arguments :=
@@ -53,7 +53,7 @@ func (s *VeraCryptWinHandle) Start() error {
 	_, err := cmd.Output()
 	// log.Printf("Output: %s\n", string(output))
 	if err != nil {
-		return fmt.Errorf("can't start veracrypt executable: %s", err)
+		return fmt.Errorf("can't start veracrypt executable: %v", err)
 	}
 	return nil
 }
@@ -62,7 +62,7 @@ func (s *VeraCryptWinHandle) Stop() error {
 	path := getVeraCryptExecPath()
 
 	if _, err := os.Stat(path); err != nil {
-		return fmt.Errorf("can't find veracrypt executable: %s", err)
+		return fmt.Errorf("can't find veracrypt executable: %v", err)
 	}
 
 	arguments :=
@@ -76,7 +76,7 @@ func (s *VeraCryptWinHandle) Stop() error {
 	_, err := cmd.Output()
 	// log.Println(string(output))
 	if err != nil {
-		return fmt.Errorf("can't start veracrypt executable: %s", err)
+		return fmt.Errorf("can't start veracrypt executable: %v", err)
 	}
 	return nil
 }

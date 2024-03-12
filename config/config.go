@@ -37,12 +37,12 @@ type VeraCryptParams struct {
 func GetConfig() (EncConfig, error) {
 	config_raw, err := os.ReadFile(".gitenc")
 	if err != nil {
-		return EncConfig{}, fmt.Errorf("can't read config file: %s", err)
+		return EncConfig{}, fmt.Errorf("can't read config file: %v", err)
 	}
 	config := EncConfig{}
 	err = yaml.Unmarshal(config_raw, &config)
 	if err != nil {
-		return EncConfig{}, fmt.Errorf("can't parse config file: %s", err)
+		return EncConfig{}, fmt.Errorf("can't parse config file: %v", err)
 	}
 	if config.SSHPort == 0 {
 		config.SSHPort = 22
