@@ -44,14 +44,22 @@ func ensureFile(path string) error {
 }
 
 func prepare(config config.EncConfig) (helperContext, error) {
+	var mountPath string
+	if strings.HasSuffix(config.VeraCryptMountPath, ":") {
+		mountPath = config.VeraCryptMountPath
+	} else {
+		mountPath = config.VeraCryptMountPath + ":"
+	}
+	repoPath := path.Join(mountPath, config.RepoPath)
 	ctx := helperContext{
 		headRefspec: fmt.Sprintf("refs/heads/*:refs/vesh/%s/heads/*", config.RemoteName),
 		tagRefspec:  fmt.Sprintf("refs/tags/*:refs/vesh/%s/tags/*", config.RemoteName),
-		repoPath:    config.RepoPath,
-		gitmarks:    path.Join(config.RepoPath, "git.marks"),
-		veshmarks:   path.Join(config.RepoPath, "veshgit.marks"),
+		repoPath:    repoPath,
+		gitmarks:    path.Join(repoPath, "git.marks"),
+		veshmarks:   path.Join(repoPath, "veshgit.marks"),
 	}
 
+	log.Printf("Repo path: %s\n", ctx.repoPath)
 	err := os.MkdirAll(ctx.repoPath, 0755)
 	if err != nil {
 		return helperContext{}, err
