@@ -12,13 +12,15 @@ import (
 )
 
 func (h *helperContext) capabilities() {
+	log.Println("--Printing cap--")
 	fmt.Println("import")
 	fmt.Println("export")
 	fmt.Printf("refspec %s\n", h.headRefspec)
 	fmt.Printf("refspec %s\n", h.tagRefspec)
-	fmt.Printf("*import-marks %s", h.gitmarks)
-	fmt.Printf("*export-marks %s", h.gitmarks)
+	fmt.Printf("*import-marks %s\n", h.gitmarks)
+	fmt.Printf("*export-marks %s\n", h.gitmarks)
 	fmt.Println()
+	log.Println("--Printed cap--")
 }
 
 type helperContext struct {
@@ -49,8 +51,20 @@ func prepare(config config.EncConfig) (helperContext, error) {
 		gitmarks:    path.Join(config.RepoPath, "git.marks"),
 		veshmarks:   path.Join(config.RepoPath, "veshgit.marks"),
 	}
-	ensureFile(ctx.gitmarks)
-	ensureFile(ctx.veshmarks)
+
+	err := os.MkdirAll(ctx.repoPath, 0755)
+	if err != nil {
+		return helperContext{}, err
+	}
+
+	err = ensureFile(ctx.gitmarks)
+	if err != nil {
+		return helperContext{}, err
+	}
+	err = ensureFile(ctx.veshmarks)
+	if err != nil {
+		return helperContext{}, err
+	}
 
 	return ctx, nil
 }
@@ -66,6 +80,7 @@ func Loop(config config.EncConfig) error {
 	log.Println("---[Main helper loop]---")
 	stdinReader := bufio.NewReader(os.Stdin)
 	for {
+		log.Println("--- loop run ---")
 		command_line, err := stdinReader.ReadString('\n')
 		if err != nil {
 			return fmt.Errorf("can't read next line of communication: %v", err)
@@ -75,6 +90,7 @@ func Loop(config config.EncConfig) error {
 		command_line_parts := strings.SplitN(command_line, " ", 2)
 
 		command := command_line_parts[0]
+		log.Printf("command first part '%s'\n", command)
 
 		if command == "\n" {
 			return nil

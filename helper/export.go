@@ -11,7 +11,7 @@ func (h *helperContext) export() error {
 		return fmt.Errorf("command export: can't get before ref list: %v", err)
 	}
 
-	cmd := h.gitCmdPrepare("fast-import", "--quite",
+	cmd := h.gitCmdPrepare("fast-import", "--quiet",
 		"--import-marks="+h.veshmarks,
 		"--export-marks="+h.veshmarks,
 	)

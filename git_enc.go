@@ -46,12 +46,16 @@ func MountVeraCrypt(config config.EncConfig) (ProcHandler, error) {
 
 func DismountSSHFS(handle ProcHandler) {
 	log.Println("---[SSHFS Dismount]---")
-	handle.Stop()
+	if handle != nil {
+		handle.Stop()
+	}
 }
 
 func DismountVeraCrypt(handle ProcHandler) {
 	log.Println("---[VeraCrypt Dismount]---")
-	handle.Stop()
+	if handle != nil {
+		handle.Stop()
+	}
 }
 
 func Main() error {
