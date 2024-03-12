@@ -5,6 +5,8 @@ import (
 	"fmt"
 )
 
+// / getRefs return slice of arrays where first string is object name and second
+// / is refname
 func (h *helperContext) getRefs() ([][2]string, error) {
 	output, err := h.gitExec("for-each-ref",
 		"--format=%(objectname) %(refname)",
@@ -38,6 +40,16 @@ func (h *helperContext) getHeadRef(name string) (string, error) {
 	}
 
 	return string(bytes.TrimSpace(output)), nil
+}
+
+func transformSlice(m [][2]string) map[string]string {
+	o := make(map[string]string, len(m))
+
+	for _, el := range m {
+		o[el[1]] = o[el[0]]
+	}
+
+	return o
 }
 
 func (h *helperContext) list() error {

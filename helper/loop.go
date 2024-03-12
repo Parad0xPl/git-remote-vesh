@@ -21,14 +21,6 @@ func (h *helperContext) capabilities() {
 	fmt.Println()
 }
 
-func (h *helperContext) export() {
-
-}
-
-func (h *helperContext) import_() {
-
-}
-
 type helperContext struct {
 	headRefspec string
 	tagRefspec  string
@@ -80,7 +72,7 @@ func Loop(config config.EncConfig) error {
 		}
 		log.Printf("Got command '%s'\n", command_line)
 
-		command_line_parts := strings.Split(command_line, " ")
+		command_line_parts := strings.SplitN(command_line, " ", 2)
 
 		command := command_line_parts[0]
 
@@ -92,8 +84,8 @@ func Loop(config config.EncConfig) error {
 			ctx.list()
 		} else if command == "export\n" {
 			ctx.export()
-		} else if command == "import\n" {
-			ctx.import_()
+		} else if command == "import" {
+			ctx.import_(command_line_parts[1])
 		} else {
 			return fmt.Errorf("unkown command '%s' from git", command)
 		}
