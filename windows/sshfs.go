@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/Parad0xpl/git_enc/v2/config"
+	"github.com/Parad0xpl/git-remote-vesh/v2/config"
 )
 
 type SshfsWinHandle struct {
