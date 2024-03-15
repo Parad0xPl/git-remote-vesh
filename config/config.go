@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"gopkg.in/yaml.v2"
@@ -63,10 +64,12 @@ func GetConfig() (EncConfig, error) {
 	}
 
 	var mountPath string
-	if strings.HasSuffix(config.VeraCryptMountPath, ":") {
-		mountPath = config.VeraCryptMountPath
-	} else {
-		mountPath = config.VeraCryptMountPath + ":"
+	if runtime.GOOS == "windows" {
+		if strings.HasSuffix(config.VeraCryptMountPath, ":/") {
+			mountPath = config.VeraCryptMountPath
+		} else {
+			mountPath = string(config.VeraCryptMountPath[0]) + ":/"
+		}
 	}
 	config.RepoPath = filepath.Join(mountPath, config.RepoPath)
 

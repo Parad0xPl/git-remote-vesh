@@ -3,6 +3,7 @@ package helper
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -11,6 +12,7 @@ import (
 func (h *helperContext) gitCmdPrepare(args ...string) *exec.Cmd {
 	cmd := exec.Command("git", args...)
 	envs := cmd.Environ()
+	log.Printf("Git repo dir: %s\n", h.repoPath)
 	envs = append(envs, fmt.Sprintf("GIT_DIR=%s", h.repoPath))
 	cmd.Env = envs
 	return cmd

@@ -37,10 +37,13 @@ func (h *helperContext) import_(f string) error {
 
 	args = append(args, refs...)
 
+	log.Println(args)
 	err := h.gitExecStdout(args...)
 	if err != nil {
 		return fmt.Errorf("import fail: %v", err)
 	}
+
+	fmt.Printf("done\n")
 
 	return nil
 }
