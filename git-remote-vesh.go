@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/Parad0xpl/git-remote-vesh/v2/config"
 	"github.com/Parad0xpl/git-remote-vesh/v2/external"
@@ -33,6 +35,16 @@ func MountVeraCrypt(config config.EncConfig) (ProcHandler, error) {
 	if _, err := os.Stat(config.RepoPath); err == nil {
 		log.Println("Repo already found - skipping VeraCrypt mount")
 		return nil, nil
+	}
+
+	if !filepath.IsAbs(config.VeraCryptVaultPath) {
+		prefix := config.SSHMountPath
+		if strings.HasSuffix(prefix, ":") {
+			prefix = prefix + "\\"
+		}
+		p := filepath.Join(prefix, config.VeraCryptVaultPath)
+		log.Printf("Non absolute path for veracrypt file: %s", p)
+		config.VeraCryptVaultPath = p
 	}
 
 	handle := external.CreateVeraCrypt(config.ExtractVeraCryptParams())

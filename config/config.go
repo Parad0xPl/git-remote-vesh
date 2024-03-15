@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
-	"path"
+	"path/filepath"
 	"strings"
 
 	"gopkg.in/yaml.v2"
@@ -60,7 +60,7 @@ func GetConfig() (EncConfig, error) {
 	} else {
 		mountPath = config.VeraCryptMountPath + ":"
 	}
-	config.RepoPath = path.Join(mountPath, config.RepoPath)
+	config.RepoPath = filepath.Join(mountPath, config.RepoPath)
 
 	return config, nil
 }

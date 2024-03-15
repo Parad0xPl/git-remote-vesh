@@ -4,6 +4,7 @@ git-remote-vesh
 
 # Config
 .gitenc
+.veshconfig
 
 # Test repo
 test_repo/

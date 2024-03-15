@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"path"
+	"path/filepath"
 
 	"github.com/Parad0xpl/git-remote-vesh/v2/config"
 )
@@ -37,8 +37,8 @@ func prepare(config config.EncConfig) (helperContext, error) {
 		headRefspec: fmt.Sprintf("refs/heads/*:refs/vesh/%s/heads/*", config.RemoteName),
 		tagRefspec:  fmt.Sprintf("refs/tags/*:refs/vesh/%s/tags/*", config.RemoteName),
 		repoPath:    repoPath,
-		gitmarks:    path.Join(repoPath, "git.marks"),
-		veshmarks:   path.Join(repoPath, "veshgit.marks"),
+		gitmarks:    filepath.Join(repoPath, "git.marks"),
+		veshmarks:   filepath.Join(repoPath, "veshgit.marks"),
 	}
 
 	// log.Printf("Repo path: %s\n", ctx.repoPath)
