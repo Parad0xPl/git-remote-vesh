@@ -36,8 +36,10 @@ type VeraCryptParams struct {
 	VeraCryptVaultPath string
 }
 
+const ConfigFileName = ".veshconfig"
+
 func GetConfig() (EncConfig, error) {
-	config_raw, err := os.ReadFile(".gitenc")
+	config_raw, err := os.ReadFile(ConfigFileName)
 	if err != nil {
 		return EncConfig{}, fmt.Errorf("can't read config file: %v", err)
 	}
