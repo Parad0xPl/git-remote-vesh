@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -39,17 +38,14 @@ type VeraCryptParams struct {
 const ConfigFileName = ".veshconfig"
 
 func GetConfig() (EncConfig, error) {
-	config_raw, err := os.ReadFile(ConfigFileName)
-	if err != nil {
-		return EncConfig{}, fmt.Errorf("can't read config file: %v", err)
-	}
-	config := EncConfig{}
+	config := parseAddress(os.Args[2])
 	defaultConfig := defaultConfig()
 	config.RemoteName = os.Args[1]
-	config.RepoPath = os.Args[2]
-	err = yaml.Unmarshal(config_raw, &config)
+
+	config_raw, err := os.ReadFile(ConfigFileName)
 	if err != nil {
-		return EncConfig{}, fmt.Errorf("can't parse config file: %v", err)
+	} else {
+		yaml.Unmarshal(config_raw, &config)
 	}
 
 	// Default
