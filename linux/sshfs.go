@@ -11,8 +11,8 @@ import (
 )
 
 type SshfsWinHandle struct {
-	args []string
-	cmd  *exec.Cmd
+	startArguments []string
+	mountPath      string
 }
 
 const defaultPath = "/usr/bin/sshfs"
@@ -38,14 +38,14 @@ func CreateSSHFS(config config.SSHFSParams) *SshfsWinHandle {
 	SSHHost := config.SSHAddress
 	SSHPath := config.SSHRemotePath
 	ssh_login := fmt.Sprintf("%s@%s:%s", SSHName, SSHHost, SSHPath)
-	mount_letter := config.SSHMountPath
+	mountPath := config.SSHMountPath
 	port := fmt.Sprintf("-p %d", config.SSHPort)
 
 	ident_file := config.SSHIdentityFile
 
 	arguments := []string{
 		ssh_login,
-		mount_letter,
+		mountPath,
 		port,
 		"-o debug",
 		"-o loglevel=debug1",
@@ -58,13 +58,14 @@ func CreateSSHFS(config config.SSHFSParams) *SshfsWinHandle {
 
 	if ident_file != "" {
 		arguments = append(arguments,
-			"-oPreferredAuthentications=publickey",
-			fmt.Sprintf("-oIdentityFile=%s", ident_file),
+			"-o PreferredAuthentications=publickey",
+			fmt.Sprintf("-o IdentityFile=%s", ident_file),
 		)
 	}
 
 	return &SshfsWinHandle{
-		args: arguments,
+		startArguments: arguments,
+		mountPath:      mountPath,
 	}
 }
 
@@ -74,16 +75,11 @@ func (s *SshfsWinHandle) Start() error {
 	if _, err := os.Stat(path); err != nil {
 		return fmt.Errorf("can't find sshfs executable: %v", err)
 	}
-	s.cmd = exec.Command(path, s.args...)
-	// s.cmd.Stdout = os.Stdout
-	// s.cmd.Stderr = os.Stderr
+	cmd := exec.Command(path, s.startArguments...)
 
-	s.cmd.Env = []string{
-		fmt.Sprintf("PATH=%s", filepath.Dir(path)),
-	}
-	err := s.cmd.Start()
+	err := cmd.Run()
 	if err != nil {
-		return fmt.Errorf("can't start sshfs executable: %v", err)
+		return fmt.Errorf("can't run sshfs executable: %v", err)
 	}
 	time.Sleep(time.Second * 2)
 	//TODO Check for error
@@ -91,8 +87,11 @@ func (s *SshfsWinHandle) Start() error {
 }
 
 func (s *SshfsWinHandle) Stop() error {
-	if s.cmd.Process != nil {
-		s.cmd.Process.Kill()
+	cmd := exec.Command("fusermount", "-u", s.mountPath)
+
+	err := cmd.Run()
+	if err != nil {
+		return fmt.Errorf("can't unmount sshfs executable: %v", err)
 	}
 	return nil
 }

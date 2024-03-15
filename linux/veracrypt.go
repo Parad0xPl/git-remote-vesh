@@ -8,15 +8,15 @@ import (
 	"github.com/Parad0xpl/git-remote-vesh/v2/config"
 )
 
-type VeraCryptWinHandle struct {
-	mountLetter string
-	vaultPath   string
+type VeraCryptHandle struct {
+	mountPath string
+	vaultPath string
 }
 
-const defautVeraCryptPath = "C:\\Program Files\\VeraCrypt\\VeraCrypt.exe"
+const defautVeraCryptPath = "/usr/bin/veracrypt"
 
 func getVeraCryptExecPath() string {
-	path, _ := exec.LookPath("VeraCrypt")
+	path, _ := exec.LookPath("veracrypt")
 
 	if path == "" {
 		path = defautVeraCryptPath
@@ -25,14 +25,14 @@ func getVeraCryptExecPath() string {
 	return path
 }
 
-func CreateVeraCrypt(config config.VeraCryptParams) *VeraCryptWinHandle {
-	return &VeraCryptWinHandle{
-		mountLetter: config.VeraCryptMountPath,
-		vaultPath:   config.VeraCryptVaultPath,
+func CreateVeraCrypt(config config.VeraCryptParams) *VeraCryptHandle {
+	return &VeraCryptHandle{
+		mountPath: config.VeraCryptMountPath,
+		vaultPath: config.VeraCryptVaultPath,
 	}
 }
 
-func (s *VeraCryptWinHandle) Start() error {
+func (s *VeraCryptHandle) Start() error {
 	path := getVeraCryptExecPath()
 
 	if _, err := os.Stat(path); err != nil {
@@ -41,16 +41,12 @@ func (s *VeraCryptWinHandle) Start() error {
 
 	arguments :=
 		[]string{
-			"/q",
-			"/l",
-			s.mountLetter,
-			"/a",
-			"/v",
 			s.vaultPath,
+			s.mountPath,
 		}
 
 	cmd := exec.Command(path, arguments...)
-	_, err := cmd.Output()
+	err := cmd.Run()
 	// log.Printf("Output: %s\n", string(output))
 	if err != nil {
 		return fmt.Errorf("can't start veracrypt executable: %v", err)
@@ -58,7 +54,7 @@ func (s *VeraCryptWinHandle) Start() error {
 	return nil
 }
 
-func (s *VeraCryptWinHandle) Stop() error {
+func (s *VeraCryptHandle) Stop() error {
 	path := getVeraCryptExecPath()
 
 	if _, err := os.Stat(path); err != nil {
@@ -67,13 +63,12 @@ func (s *VeraCryptWinHandle) Stop() error {
 
 	arguments :=
 		[]string{
-			"/q",
-			"/d",
-			s.mountLetter,
+			"-d",
+			s.mountPath,
 		}
 
 	cmd := exec.Command(path, arguments...)
-	_, err := cmd.Output()
+	err := cmd.Run()
 	// log.Println(string(output))
 	if err != nil {
 		return fmt.Errorf("can't start veracrypt executable: %v", err)
