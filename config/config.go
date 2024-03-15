@@ -44,14 +44,26 @@ func GetConfig() (EncConfig, error) {
 		return EncConfig{}, fmt.Errorf("can't read config file: %v", err)
 	}
 	config := EncConfig{}
+	defaultConfig := defaultConfig()
 	config.RemoteName = os.Args[1]
 	config.RepoPath = os.Args[2]
 	err = yaml.Unmarshal(config_raw, &config)
 	if err != nil {
 		return EncConfig{}, fmt.Errorf("can't parse config file: %v", err)
 	}
+
+	// Default
 	if config.SSHPort == 0 {
-		config.SSHPort = 22
+		config.SSHPort = defaultConfig.SSHPort
+	}
+	if config.SSHMountPath == "" {
+		config.SSHMountPath = defaultConfig.SSHMountPath
+	}
+	if config.VeraCryptMountPath == "" {
+		config.VeraCryptMountPath = defaultConfig.VeraCryptMountPath
+	}
+	if config.VeraCryptVaultPath == "" {
+		config.VeraCryptVaultPath = defaultConfig.VeraCryptVaultPath
 	}
 
 	var mountPath string
