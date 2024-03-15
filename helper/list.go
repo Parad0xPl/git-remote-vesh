@@ -3,7 +3,6 @@ package helper
 import (
 	"bytes"
 	"fmt"
-	"log"
 )
 
 // / getRefs return slice of arrays where first string is object name and second
@@ -47,7 +46,7 @@ func transformSlice(m [][2]string) map[string]string {
 	o := make(map[string]string, len(m))
 
 	for _, el := range m {
-		log.Printf("Transform %s = %s", el[1], el[0])
+		// log.Printf("Transform %s = %s", el[1], el[0])
 		o[el[1]] = el[0]
 	}
 
