@@ -1,10 +1,11 @@
-package windows
+//go:build linux
+
+package external
 
 import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"time"
 
 	"github.com/Parad0xpl/git-remote-vesh/v2/config"
@@ -15,36 +16,21 @@ type SshfsWinHandle struct {
 	mountPath      string
 }
 
-const defaultPath = "/usr/bin/sshfs"
+const defaultSSHFSPath = "/usr/bin/sshfs"
 
 func getSSHFSPath() string {
-	path, _ := exec.LookPath("sshfs")
-
-	if path == "" {
-		path = defaultPath
-	}
-
-	path2, err := filepath.Abs(path)
-
-	if err == nil {
-		path = path2
-	}
-
-	return path
+	return getPathOrDef("sshfs", defaultSSHFSPath)
 }
 
 func CreateSSHFS(config config.SSHFSParams) *SshfsWinHandle {
-	SSHName := config.SSHUser
-	SSHHost := config.SSHAddress
-	SSHPath := config.SSHRemotePath
-	ssh_login := fmt.Sprintf("%s@%s:%s", SSHName, SSHHost, SSHPath)
+	sshLogin := formatSSHConnection(&config)
 	mountPath := config.SSHMountPath
 	port := fmt.Sprintf("-p %d", config.SSHPort)
 
 	ident_file := config.SSHIdentityFile
 
 	arguments := []string{
-		ssh_login,
+		sshLogin,
 		mountPath,
 		port,
 		"-o debug",

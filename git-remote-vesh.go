@@ -5,8 +5,8 @@ import (
 	"os"
 
 	"github.com/Parad0xpl/git-remote-vesh/v2/config"
+	"github.com/Parad0xpl/git-remote-vesh/v2/external"
 	"github.com/Parad0xpl/git-remote-vesh/v2/helper"
-	"github.com/Parad0xpl/git-remote-vesh/v2/windows"
 )
 
 type ProcHandler interface {
@@ -21,7 +21,7 @@ func MountSSHFS(config config.EncConfig) (ProcHandler, error) {
 		log.Println("Vault already found - skipping sshfs mount")
 		return nil, nil
 	}
-	handle := windows.CreateSSHFS(config.ExtractSSHFSParams())
+	handle := external.CreateSSHFS(config.ExtractSSHFSParams())
 	handle.Start()
 
 	return handle, nil
@@ -35,7 +35,7 @@ func MountVeraCrypt(config config.EncConfig) (ProcHandler, error) {
 		return nil, nil
 	}
 
-	handle := windows.CreateVeraCrypt(config.ExtractVeraCryptParams())
+	handle := external.CreateVeraCrypt(config.ExtractVeraCryptParams())
 	err := handle.Start()
 	if err != nil {
 		return nil, err

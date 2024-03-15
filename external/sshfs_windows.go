@@ -1,4 +1,6 @@
-package windows
+//go:build windows
+
+package external
 
 import (
 	"fmt"
@@ -15,37 +17,22 @@ type SshfsWinHandle struct {
 	cmd  *exec.Cmd
 }
 
-const defaultPath = "C:\\Program Files\\SSHFS-Win\\bin\\sshfs.exe"
+const defaultSSHFSPath = "C:\\Program Files\\SSHFS-Win\\bin\\sshfs.exe"
 
 func getSSHFSPath() string {
-	path, _ := exec.LookPath("sshfs")
-
-	if path == "" {
-		path = defaultPath
-	}
-
-	path2, err := filepath.Abs(path)
-
-	if err == nil {
-		path = path2
-	}
-
-	return path
+	return getPathOrDef("sshfs", defaultSSHFSPath)
 }
 
 func CreateSSHFS(config config.SSHFSParams) *SshfsWinHandle {
-	SSHName := config.SSHUser
-	SSHHost := config.SSHAddress
-	SSHPath := config.SSHRemotePath
-	ssh_login := fmt.Sprintf("%s@%s:%s", SSHName, SSHHost, SSHPath)
-	mount_letter := config.SSHMountPath
+	sshLogin := formatSSHConnection(&config)
+	mountLetter := config.SSHMountPath
 	port := fmt.Sprintf("-p%d", config.SSHPort)
 
-	ident_file := config.SSHIdentityFile
+	identFile := config.SSHIdentityFile
 
 	arguments := []string{
-		ssh_login,
-		mount_letter,
+		sshLogin,
+		mountLetter,
 		port,
 		"-ovolname=BitEncryptSSHFS",
 		"-odebug",
@@ -64,10 +51,10 @@ func CreateSSHFS(config config.SSHFSParams) *SshfsWinHandle {
 		"-ofollow_symlinks",
 	}
 
-	if ident_file != "" {
+	if identFile != "" {
 		arguments = append(arguments,
 			"-oPreferredAuthentications=publickey",
-			fmt.Sprintf("-oIdentityFile=%s", ident_file),
+			fmt.Sprintf("-oIdentityFile=%s", identFile),
 		)
 	}
 

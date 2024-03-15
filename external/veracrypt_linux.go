@@ -1,4 +1,6 @@
-package windows
+//go:build linux
+
+package external
 
 import (
 	"fmt"
@@ -16,13 +18,7 @@ type VeraCryptHandle struct {
 const defautVeraCryptPath = "/usr/bin/veracrypt"
 
 func getVeraCryptExecPath() string {
-	path, _ := exec.LookPath("veracrypt")
-
-	if path == "" {
-		path = defautVeraCryptPath
-	}
-
-	return path
+	return getPathOrDef("veracrypt", defautVeraCryptPath)
 }
 
 func CreateVeraCrypt(config config.VeraCryptParams) *VeraCryptHandle {
