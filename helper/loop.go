@@ -14,8 +14,8 @@ func (h *helperContext) capabilities() {
 	fmt.Println("import")
 	fmt.Println("export")
 	fmt.Printf("refspec %s\n", h.headRefspec)
-	fmt.Printf("*import-marks %s\n", h.gitmarks)
-	fmt.Printf("*export-marks %s\n", h.gitmarks)
+	fmt.Printf("*import-marks %s\n", h.veshmarks)
+	fmt.Printf("*export-marks %s\n", h.veshmarks)
 	fmt.Println()
 	// log.Println("--Printed cap--")
 }
