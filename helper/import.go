@@ -24,8 +24,8 @@ func (h *helperContext) import_(f string) error {
 		f = commandLineParts[1]
 	}
 
-	fmt.Printf("feature import-marks=%s\n", h.gitmarks)
-	fmt.Printf("feature export-marks=%s\n", h.gitmarks)
+	fmt.Printf("feature import-marks=%s\n", h.veshmarks)
+	fmt.Printf("feature export-marks=%s\n", h.veshmarks)
 	fmt.Printf("feature done\n")
 
 	args := []string{"fast-export",

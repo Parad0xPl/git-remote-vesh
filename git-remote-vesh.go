@@ -20,6 +20,10 @@ type ProcHandler interface {
 func MountSSHFS(config config.EncConfig) (ProcHandler, error) {
 	log.Println("---[SSHFS Mount]---")
 
+	if utils.IsDebug() {
+		log.Println("Theoretical vault path:", config.VeraCryptVaultPath)
+	}
+
 	if _, err := os.Stat(config.VeraCryptVaultPath); err == nil {
 		log.Println("Vault already found - skipping sshfs mount")
 		return nil, nil
@@ -32,6 +36,10 @@ func MountSSHFS(config config.EncConfig) (ProcHandler, error) {
 
 func MountVeraCrypt(config config.EncConfig) (ProcHandler, error) {
 	log.Println("---[VeraCrypt Mount]---")
+
+	if utils.IsDebug() {
+		log.Println("Theoretical repo path:", config.RepoPath)
+	}
 
 	if _, err := os.Stat(config.RepoPath); err == nil {
 		log.Println("Repo already found - skipping VeraCrypt mount")
