@@ -27,6 +27,9 @@ func getSSHFSPath() string {
 
 func CreateSSHFS(config config.SSHFSParams) *SshfsWinHandle {
 	sshLogin := formatSSHConnection(&config)
+	if config.SSHRemotePath == "" {
+		sshLogin = sshLogin + ":"
+	}
 	mountLetter := config.SSHMountPath
 	port := fmt.Sprintf("-p%d", config.SSHPort)
 
