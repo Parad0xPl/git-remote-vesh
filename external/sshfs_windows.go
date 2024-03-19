@@ -4,12 +4,14 @@ package external
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"time"
 
 	"github.com/Parad0xpl/git-remote-vesh/v2/config"
+	"github.com/Parad0xpl/git-remote-vesh/v2/utils"
 )
 
 type SshfsWinHandle struct {
@@ -51,6 +53,10 @@ func CreateSSHFS(config config.SSHFSParams) *SshfsWinHandle {
 		"-ofollow_symlinks",
 	}
 
+	if utils.IsDebug() {
+		log.Println("Arguments for sshfs:", arguments)
+	}
+
 	if identFile != "" {
 		arguments = append(arguments,
 			"-oPreferredAuthentications=publickey",
@@ -70,17 +76,24 @@ func (s *SshfsWinHandle) Start() error {
 		return fmt.Errorf("can't find sshfs executable: %v", err)
 	}
 	s.cmd = exec.Command(path, s.args...)
-	// s.cmd.Stdout = os.Stdout
-	// s.cmd.Stderr = os.Stderr
 
 	s.cmd.Env = []string{
 		fmt.Sprintf("PATH=%s", filepath.Dir(path)),
+	}
+
+	if utils.IsDebug() {
+		log.Println("SSHFS Env:", s.cmd.Env)
+
+		log.Println("---SSHS Start---")
+		s.cmd.Stderr = os.Stderr
+		s.cmd.Stdout = os.Stderr
 	}
 	err := s.cmd.Start()
 	if err != nil {
 		return fmt.Errorf("can't start sshfs executable: %v", err)
 	}
 	time.Sleep(time.Second * 2)
+
 	//TODO Check for error
 	return nil
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/Parad0xpl/git-remote-vesh/v2/config"
 	"github.com/Parad0xpl/git-remote-vesh/v2/external"
 	"github.com/Parad0xpl/git-remote-vesh/v2/helper"
+	"github.com/Parad0xpl/git-remote-vesh/v2/utils"
 )
 
 type ProcHandler interface {
@@ -43,10 +44,13 @@ func MountVeraCrypt(config config.EncConfig) (ProcHandler, error) {
 			prefix = prefix + "\\"
 		}
 		p := filepath.Join(prefix, config.VeraCryptVaultPath)
-		log.Printf("Non absolute path for veracrypt file: %s", p)
+
 		config.VeraCryptVaultPath = p
 	}
 
+	if utils.IsDebug() {
+		log.Println("VeraCrypt path:", config.VeraCryptVaultPath)
+	}
 	handle := external.CreateVeraCrypt(config.ExtractVeraCryptParams())
 	err := handle.Start()
 	if err != nil {
@@ -92,10 +96,12 @@ func Main() error {
 	}
 	defer DismountVeraCrypt(veraHandle)
 
+	log.Println("---[Begin Main]---")
 	err = helper.Loop(config)
 	if err != nil {
 		return err
 	}
+	log.Println("---[End Main]---")
 
 	return nil
 }

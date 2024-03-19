@@ -4,11 +4,12 @@ package external
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
-	"time"
 
 	"github.com/Parad0xpl/git-remote-vesh/v2/config"
+	"github.com/Parad0xpl/git-remote-vesh/v2/utils"
 )
 
 type SshfsWinHandle struct {
@@ -63,19 +64,31 @@ func (s *SshfsWinHandle) Start() error {
 	}
 	cmd := exec.Command(path, s.startArguments...)
 
+	if utils.IsDebug() {
+		log.Println("---SSHFS Start---")
+		cmd.Stderr = os.Stderr
+		cmd.Stdout = os.Stderr
+	}
+
 	err := cmd.Run()
+	log.Println("---SSHFS Start---")
 	if err != nil {
 		return fmt.Errorf("can't run sshfs executable: %v", err)
 	}
-	time.Sleep(time.Second * 2)
-	//TODO Check for error
 	return nil
 }
 
 func (s *SshfsWinHandle) Stop() error {
 	cmd := exec.Command("fusermount", "-u", s.mountPath)
 
+	if utils.IsDebug() {
+		log.Println("---SSHFS Stop---")
+		cmd.Stderr = os.Stderr
+		cmd.Stdout = os.Stderr
+	}
+
 	err := cmd.Run()
+	log.Println("---SSHFS Stop---")
 	if err != nil {
 		return fmt.Errorf("can't unmount sshfs executable: %v", err)
 	}
