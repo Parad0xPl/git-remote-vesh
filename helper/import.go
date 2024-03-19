@@ -29,9 +29,9 @@ func (h *helperContext) import_(f string) error {
 	fmt.Printf("feature done\n")
 
 	args := []string{"fast-export",
-		"--import-marks", h.veshmarks,
-		"--export-marks", h.veshmarks,
-		"--refspec", h.headRefspec,
+		"--import-marks=" + h.veshmarks,
+		"--export-marks=" + h.veshmarks,
+		"--refspec=" + h.headRefspec,
 	}
 
 	args = append(args, refs...)
