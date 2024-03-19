@@ -32,7 +32,6 @@ func (h *helperContext) import_(f string) error {
 		"--import-marks", h.veshmarks,
 		"--export-marks", h.veshmarks,
 		"--refspec", h.headRefspec,
-		"--refspec", h.tagRefspec,
 	}
 
 	args = append(args, refs...)
