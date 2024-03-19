@@ -32,17 +32,17 @@ type helperContext struct {
 }
 
 func prepare(config config.EncConfig) (helperContext, error) {
-	repoPath := config.RepoPath
+	veshDir := config.GetVeshConfigDir()
 	ctx := helperContext{
 		headRefspec: fmt.Sprintf("refs/heads/*:refs/vesh/%s/heads/*", config.RemoteName),
 		tagRefspec:  fmt.Sprintf("refs/tags/*:refs/vesh/%s/tags/*", config.RemoteName),
-		repoPath:    repoPath,
-		gitmarks:    filepath.Join(repoPath, "git.marks"),
-		veshmarks:   filepath.Join(repoPath, "veshgit.marks"),
+		repoPath:    config.RepoPath,
+		gitmarks:    filepath.Join(veshDir, "git.marks"),
+		veshmarks:   filepath.Join(veshDir, "veshgit.marks"),
 	}
 
 	// log.Printf("Repo path: %s\n", ctx.repoPath)
-	err := os.MkdirAll(ctx.repoPath, 0755)
+	err := os.MkdirAll(veshDir, 0755)
 	if err != nil {
 		return helperContext{}, err
 	}

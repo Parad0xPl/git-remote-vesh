@@ -1,11 +1,13 @@
 package config
 
 import (
+	"log"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
 
+	"github.com/Parad0xpl/git-remote-vesh/v2/utils"
 	"gopkg.in/yaml.v2"
 )
 
@@ -20,6 +22,8 @@ type EncConfig struct {
 	VeraCryptVaultPath string `yaml:"veracrypt_vault_path"`
 	RepoPath           string `yaml:"repo_path"`
 	RemoteName         string
+
+	LocalRepoPath string
 }
 
 type SSHFSParams struct {
@@ -38,8 +42,26 @@ type VeraCryptParams struct {
 
 const ConfigFileName = ".veshconfig"
 
+func getLocalRepo() string {
+	local := os.Getenv("GIT_DIR")
+	if local == "" {
+		log.Println("WARNING: No local dir path")
+	}
+	return local
+}
+
+func (c *EncConfig) GetVeshConfigDir() string {
+	p := filepath.Join(c.LocalRepoPath, "vesh")
+	if utils.IsDebug() {
+		log.Println("Vesh path:", p)
+	}
+
+	return p
+}
+
 func GetConfig() (EncConfig, error) {
 	config := parseAddress(os.Args[2])
+	config.LocalRepoPath = getLocalRepo()
 	defaultConfig := defaultConfig()
 	config.RemoteName = os.Args[1]
 
