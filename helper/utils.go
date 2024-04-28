@@ -3,12 +3,19 @@ package helper
 import (
 	"bytes"
 	"fmt"
+	"io"
+	"log"
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/Parad0xpl/git-remote-vesh/v2/utils"
 )
 
 func (h *helperContext) gitCmdPrepare(args ...string) *exec.Cmd {
+	if utils.IsDebug() {
+		log.Println("Git command:", args)
+	}
 	cmd := exec.Command("git", args...)
 	envs := cmd.Environ()
 	envs = append(envs, fmt.Sprintf("GIT_DIR=%s", h.repoPath))
@@ -41,6 +48,9 @@ func ensureFile(path string) error {
 		}
 		return err
 	}
+	if utils.IsDebug() {
+		log.Println("Created file:", path)
+	}
 	file.Close()
 	return nil
 }
@@ -48,9 +58,17 @@ func ensureFile(path string) error {
 func (ctx *helperContext) readCmd() ([]string, error) {
 	commandLine, err := ctx.reader.ReadString('\n')
 	if err != nil {
+		if err == io.EOF {
+			if utils.IsDebug() {
+				log.Printf("Got EOF - ignoring?")
+			}
+			return nil, nil
+		}
 		return nil, fmt.Errorf("can't read next line of communication: %v", err)
 	}
-	// log.Printf("Got command '%s'\n", command_line)
+	if utils.IsDebug() {
+		log.Printf("Got command '%s'\n", commandLine)
+	}
 
 	commandLineParts := strings.SplitN(commandLine, " ", 2)
 	return commandLineParts, nil

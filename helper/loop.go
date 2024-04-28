@@ -14,8 +14,8 @@ func (h *helperContext) capabilities() {
 	fmt.Println("import")
 	fmt.Println("export")
 	fmt.Printf("refspec %s\n", h.headRefspec)
-	fmt.Printf("*import-marks %s\n", h.veshmarks)
-	fmt.Printf("*export-marks %s\n", h.veshmarks)
+	fmt.Printf("*import-marks %s\n", h.gitmarks)
+	fmt.Printf("*export-marks %s\n", h.gitmarks)
 	fmt.Println()
 	// log.Println("--Printed cap--")
 }
@@ -32,7 +32,7 @@ type helperContext struct {
 func prepare(config config.EncConfig) (helperContext, error) {
 	veshDir := config.GetVeshConfigDir()
 	ctx := helperContext{
-		headRefspec: fmt.Sprintf("refs/heads/*:refs/remotes/%s/*", config.RemoteName),
+		headRefspec: fmt.Sprintf("refs/heads/*:refs/remotes/%s/heads/*", config.RemoteName),
 		repoPath:    config.RepoPath,
 		gitmarks:    filepath.Join(veshDir, "git.marks"),
 		veshmarks:   filepath.Join(veshDir, "veshgit.marks"),
@@ -71,6 +71,9 @@ func Loop(config config.EncConfig) error {
 		commandLineParts, err := ctx.readCmd()
 		if err != nil {
 			return err
+		}
+		if commandLineParts == nil {
+			return nil
 		}
 
 		command := commandLineParts[0]
