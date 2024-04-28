@@ -133,10 +133,11 @@ func GetConfig() (EncConfig, error) {
 	// Absolutise paths
 	config.LocalRepoPath = absolutePath(config.LocalRepoPath)
 	config.SSHIdentityFile = absolutePath(config.SSHIdentityFile)
-	config.VeraCryptVaultPath =
-		filepath.Join(
+	if !filepath.IsAbs(config.VeraCryptVaultPath) {
+		config.VeraCryptVaultPath = filepath.Join(
 			config.SSHMountPath+string(filepath.Separator),
 			config.VeraCryptVaultPath)
+	}
 
 	return config, nil
 }

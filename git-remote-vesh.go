@@ -28,6 +28,10 @@ func MountSSHFS(config config.EncConfig) (ProcHandler, error) {
 		log.Println("Vault already found - skipping sshfs mount")
 		return nil, nil
 	}
+	if _, err := os.Stat(config.SSHMountPath); err == nil {
+		log.Println("SSH already mounted - skipping")
+		return nil, nil
+	}
 	handle := external.CreateSSHFS(config.ExtractSSHFSParams())
 	handle.Start()
 

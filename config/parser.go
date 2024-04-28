@@ -1,5 +1,12 @@
 package config
 
+import (
+	"log"
+	"strings"
+
+	"github.com/Parad0xpl/git-remote-vesh/v2/utils"
+)
+
 type parser struct {
 	buffer string
 
@@ -39,6 +46,12 @@ func (p *parser) parseChar(c rune) {
 }
 
 func parseAddress(address string) EncConfig {
+	address = strings.TrimPrefix(address, "vesh://")
+
+	if utils.IsDebug() {
+		log.Println("---Parsing address---")
+		log.Println("Address:", address)
+	}
 	output := EncConfig{}
 	parser := parser{}
 
