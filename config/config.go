@@ -47,6 +47,10 @@ func getLocalRepo() string {
 	if local == "" {
 		log.Println("WARNING: No local dir path")
 	}
+	absolute_path, err := filepath.Abs(local)
+	if err == nil {
+		return absolute_path
+	}
 	return local
 }
 
@@ -59,13 +63,43 @@ func (c *EncConfig) GetVeshConfigDir() string {
 	return p
 }
 
+// absolutePath try to absolute path to the local git repository
+// or CWD
+func absolutePath(path string) string {
+	if path == "" {
+		return path
+	}
+	if filepath.IsAbs(path) {
+		return path
+	}
+	ref_dir := getLocalRepo()
+	if ref_dir == "" {
+		ref_dir, _ = os.Getwd()
+	}
+	p := filepath.Join(ref_dir, path)
+	return filepath.Clean(p)
+}
+
 func GetConfig() (EncConfig, error) {
-	config := parseAddress(os.Args[2])
+	address := os.Getenv("VESH_TEST_ADDRESS")
+	if address == "" {
+		address = os.Args[2]
+	}
+	config := parseAddress(address)
 	config.LocalRepoPath = getLocalRepo()
 	defaultConfig := defaultConfig()
-	config.RemoteName = os.Args[1]
 
-	config_raw, err := os.ReadFile(ConfigFileName)
+	remote_name := os.Getenv("VESH_TEST_REMOTENAME")
+	if remote_name == "" {
+		remote_name = os.Args[1]
+	}
+	config.RemoteName = remote_name
+
+	configPath := os.Getenv("VESH_TEST_CONFIGPATH")
+	if configPath == "" {
+		configPath = ConfigFileName
+	}
+	config_raw, err := os.ReadFile(configPath)
 	if err != nil {
 	} else {
 		yaml.Unmarshal(config_raw, &config)
@@ -85,6 +119,7 @@ func GetConfig() (EncConfig, error) {
 		config.VeraCryptVaultPath = defaultConfig.VeraCryptVaultPath
 	}
 
+	// Ensure that mount path for Veracrypt has correct form for windows
 	var mountPath string
 	if runtime.GOOS == "windows" {
 		if strings.HasSuffix(config.VeraCryptMountPath, ":/") {
@@ -94,6 +129,14 @@ func GetConfig() (EncConfig, error) {
 		}
 	}
 	config.RepoPath = filepath.Join(mountPath, config.RepoPath)
+
+	// Absolutise paths
+	config.LocalRepoPath = absolutePath(config.LocalRepoPath)
+	config.SSHIdentityFile = absolutePath(config.SSHIdentityFile)
+	config.VeraCryptVaultPath =
+		filepath.Join(
+			config.SSHMountPath+string(filepath.Separator),
+			config.VeraCryptVaultPath)
 
 	return config, nil
 }
