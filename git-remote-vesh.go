@@ -45,8 +45,14 @@ func MountVeraCrypt(config config.EncConfig) (ProcHandler, error) {
 		log.Println("Theoretical repo path:", config.RepoPath)
 	}
 
-	if _, err := os.Stat(config.RepoPath); err == nil {
-		log.Println("Repo already found - skipping VeraCrypt mount")
+	parent_dir := filepath.Dir(config.RepoPath)
+	if _, err := os.Stat(parent_dir); err == nil {
+		if _, err := os.Stat(config.RepoPath); err == nil {
+			log.Println("Repo already found - skipping VeraCrypt mount")
+		} else {
+			log.Println("No repo but vera crypt folder found - creating bare repository")
+			utils.CreateBareRepo(config.RepoPath)
+		}
 		return nil, nil
 	}
 
