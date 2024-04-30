@@ -6,6 +6,8 @@ import (
 	"strings"
 )
 
+// import_ handles all logic of importing files from remote repository to
+// local. It needs to get ref that was passed on the first life.
 func (h *helperContext) import_(f string) error {
 	refs := make([]string, 0)
 	for {

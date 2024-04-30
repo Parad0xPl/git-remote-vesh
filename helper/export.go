@@ -5,6 +5,7 @@ import (
 	"os"
 )
 
+// export handles all logic of exporting files from local repo to remote
 func (h *helperContext) export() error {
 	beforeRefs, err := h.getRefs()
 	if err != nil {

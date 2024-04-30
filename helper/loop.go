@@ -9,6 +9,7 @@ import (
 	"github.com/Parad0xpl/git-remote-vesh/v2/config"
 )
 
+// capabilities return capabilites handles by our handler
 func (h *helperContext) capabilities() {
 	// log.Println("--Printing cap--")
 	fmt.Println("import")
@@ -20,6 +21,7 @@ func (h *helperContext) capabilities() {
 	// log.Println("--Printed cap--")
 }
 
+// helperContext gather data required between all function calls
 type helperContext struct {
 	headRefspec string
 	repoPath    string
@@ -29,7 +31,8 @@ type helperContext struct {
 	reader *bufio.Reader
 }
 
-func prepare(config config.EncConfig) (helperContext, error) {
+// prepare create all neceserry files inside local repo
+func prepare(config config.VeshConfig) (helperContext, error) {
 	veshDir := config.GetVeshConfigDir()
 	ctx := helperContext{
 		headRefspec: fmt.Sprintf("refs/heads/*:refs/remotes/%s/heads/*", config.RemoteName),
@@ -56,9 +59,9 @@ func prepare(config config.EncConfig) (helperContext, error) {
 	return ctx, nil
 }
 
-// / Loop contain full logic of handling git communication. Most of logic is
-// / based on Alec Newman article (https://rovaughn.github.io/2015-2-9.html)
-func Loop(config config.EncConfig) error {
+// Loop contain full logic of handling git communication. Most of logic is
+// based on Alec Newman article (https://rovaughn.github.io/2015-2-9.html)
+func Loop(config config.VeshConfig) error {
 	ctx, err := prepare(config)
 	if err != nil {
 		return fmt.Errorf("can't prepare vesh contex: %v", err)

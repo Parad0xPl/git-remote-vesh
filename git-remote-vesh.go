@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -12,12 +13,15 @@ import (
 	"github.com/Parad0xpl/git-remote-vesh/v2/utils"
 )
 
+// ProcHandler represent process that can be started and stoped asynchronously
 type ProcHandler interface {
 	Start() error
 	Stop() error
 }
 
-func MountSSHFS(config config.EncConfig) (ProcHandler, error) {
+// MountSSHFS try to mount SSHFS resources with data from config. If VeraCrypt
+// file is already accessible it is skipped.
+func MountSSHFS(config config.VeshConfig) (ProcHandler, error) {
 	log.Println("---[SSHFS Mount]---")
 
 	if utils.IsDebug() {
@@ -33,12 +37,17 @@ func MountSSHFS(config config.EncConfig) (ProcHandler, error) {
 		return nil, nil
 	}
 	handle := external.CreateSSHFS(config.ExtractSSHFSParams())
-	handle.Start()
+	err := handle.Start()
+	if err != nil {
+		return nil, fmt.Errorf("can't mount sshfs: %e", err)
+	}
 
 	return handle, nil
 }
 
-func MountVeraCrypt(config config.EncConfig) (ProcHandler, error) {
+// MountVeraCrypt try to mount VeraCrypt container specified in the config. If
+// it is mounted already it is skipped.
+func MountVeraCrypt(config config.VeshConfig) (ProcHandler, error) {
 	log.Println("---[VeraCrypt Mount]---")
 
 	if utils.IsDebug() {
@@ -78,6 +87,7 @@ func MountVeraCrypt(config config.EncConfig) (ProcHandler, error) {
 	return handle, nil
 }
 
+// DismountSSHFS dismount SSHFS if proc handler is available
 func DismountSSHFS(handle ProcHandler) {
 	log.Println("---[SSHFS Dismount]---")
 	if handle != nil {
@@ -85,6 +95,7 @@ func DismountSSHFS(handle ProcHandler) {
 	}
 }
 
+// DismountVeraCrypt dismount VeraCrypt if proc handler is available
 func DismountVeraCrypt(handle ProcHandler) {
 	log.Println("---[VeraCrypt Dismount]---")
 	if handle != nil {
@@ -92,6 +103,7 @@ func DismountVeraCrypt(handle ProcHandler) {
 	}
 }
 
+// Main realise base logic of application
 func Main() error {
 	if len(os.Args) != 3 {
 		log.Printf("Usage: %s <remote name> <remote address>\n", os.Args[0])

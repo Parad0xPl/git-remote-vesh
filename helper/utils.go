@@ -12,6 +12,9 @@ import (
 	"github.com/Parad0xpl/git-remote-vesh/v2/utils"
 )
 
+// gitCmdPrepare prepare exec.Cmd for running git command in remote repository
+// with given arguments. It sets GIT_DIR envirenment variable and return ready
+// to run.
 func (h *helperContext) gitCmdPrepare(args ...string) *exec.Cmd {
 	if utils.IsDebug() {
 		log.Println("Git command:", args)
@@ -23,11 +26,13 @@ func (h *helperContext) gitCmdPrepare(args ...string) *exec.Cmd {
 	return cmd
 }
 
+// gitExec execute git with given arguments. Return output as bytes array
 func (h *helperContext) gitExec(args ...string) ([]byte, error) {
 	cmd := h.gitCmdPrepare(args...)
 	return cmd.Output()
 }
 
+// gitExecStdout execute git command with output redirected to Stderr and Stdout
 func (h *helperContext) gitExecStdout(args ...string) error {
 	cmd := h.gitCmdPrepare(args...)
 	cmd.Stderr = os.Stderr
@@ -35,11 +40,13 @@ func (h *helperContext) gitExecStdout(args ...string) error {
 	return cmd.Run()
 }
 
+// gitExecString execute git with given argument. Return output as string
 func (h *helperContext) gitExecString(args ...string) (string, error) {
 	output, err := h.gitExec(args...)
 	return string(bytes.TrimSpace(output)), err
 }
 
+// ensureFile create file with given path it doesn't exists
 func ensureFile(path string) error {
 	file, err := os.OpenFile(path, os.O_CREATE|os.O_EXCL, 0666)
 	if err != nil {
@@ -55,6 +62,8 @@ func ensureFile(path string) error {
 	return nil
 }
 
+// readCmd return one line of command taken from Stdin. Return splitted by space
+// slice of strings
 func (ctx *helperContext) readCmd() ([]string, error) {
 	commandLine, err := ctx.reader.ReadString('\n')
 	if err != nil {

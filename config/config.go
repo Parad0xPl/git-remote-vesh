@@ -11,7 +11,12 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type EncConfig struct {
+// VeshConfig holds all data related to connectio and encryption. It is based
+// on remote url and config inside repo for more customization. Most of it
+// should be left to default for easier usage as all important data can be
+// provided in url.
+// TODO: Add user config in home directory
+type VeshConfig struct {
 	SSHPort            int    `yaml:"ssh_port"`
 	SSHAddress         string `yaml:"ssh_address"`
 	SSHUser            string `yaml:"ssh_user"`
@@ -26,6 +31,7 @@ type EncConfig struct {
 	LocalRepoPath string
 }
 
+// SSHFSParams is extracted part of config related only to SSHFS mounting
 type SSHFSParams struct {
 	SSHPort         int
 	SSHAddress      string
@@ -35,13 +41,18 @@ type SSHFSParams struct {
 	SSHRemotePath   string
 }
 
+// VeraCryptParams is extracted part of config related only to VeraCrypt
+// mounting
 type VeraCryptParams struct {
 	VeraCryptMountPath string
 	VeraCryptVaultPath string
 }
 
+// ConfigFileName is a default filename of the config inside of the repo
 const ConfigFileName = ".veshconfig"
 
+// getLocalRepo should return absolute path to the repositorie holded inside
+// GIT_DIR environment variable
 func getLocalRepo() string {
 	local := os.Getenv("GIT_DIR")
 	if local == "" {
@@ -54,7 +65,9 @@ func getLocalRepo() string {
 	return local
 }
 
-func (c *EncConfig) GetVeshConfigDir() string {
+// GetVeshConfigDir return vesh "inside repo" directory for mark files and other
+// local config
+func (c *VeshConfig) GetVeshConfigDir() string {
 	p := filepath.Join(c.LocalRepoPath, "vesh", c.RemoteName)
 	if utils.IsDebug() {
 		log.Println("Vesh path:", p)
@@ -64,7 +77,7 @@ func (c *EncConfig) GetVeshConfigDir() string {
 }
 
 // absolutePath try to absolute path to the local git repository
-// or CWD
+// or CWD if there is no repository path
 func absolutePath(path string) string {
 	if path == "" {
 		return path
@@ -80,7 +93,14 @@ func absolutePath(path string) string {
 	return filepath.Clean(p)
 }
 
-func GetConfig() (EncConfig, error) {
+// GetConfig return parsed config from all sources. It is based on defaultConfig()
+// and filled with custom populated properties.
+//
+// For testing some options can be passed with environment variables:
+// VESH_TEST_ADDRESS
+// VESH_TEST_REMOTENAME
+// VESH_TEST_CONFIGPATH
+func GetConfig() (VeshConfig, error) {
 	address := os.Getenv("VESH_TEST_ADDRESS")
 	if address == "" {
 		address = os.Args[2]
@@ -142,7 +162,8 @@ func GetConfig() (EncConfig, error) {
 	return config, nil
 }
 
-func (c *EncConfig) ExtractSSHFSParams() SSHFSParams {
+// ExtractSSHFSParams return sshfs isolated properties
+func (c *VeshConfig) ExtractSSHFSParams() SSHFSParams {
 	return SSHFSParams{
 		SSHPort:         c.SSHPort,
 		SSHAddress:      c.SSHAddress,
@@ -153,7 +174,8 @@ func (c *EncConfig) ExtractSSHFSParams() SSHFSParams {
 	}
 }
 
-func (c *EncConfig) ExtractVeraCryptParams() VeraCryptParams {
+// ExtractVeraCryptParam return VeraCrypt isolated properties
+func (c *VeshConfig) ExtractVeraCryptParams() VeraCryptParams {
 	return VeraCryptParams{
 		VeraCryptMountPath: c.VeraCryptMountPath,
 		VeraCryptVaultPath: c.VeraCryptVaultPath,
