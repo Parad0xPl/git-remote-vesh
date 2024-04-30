@@ -55,7 +55,7 @@ func getLocalRepo() string {
 }
 
 func (c *EncConfig) GetVeshConfigDir() string {
-	p := filepath.Join(c.LocalRepoPath, "vesh")
+	p := filepath.Join(c.LocalRepoPath, "vesh", c.RemoteName)
 	if utils.IsDebug() {
 		log.Println("Vesh path:", p)
 	}
