@@ -28,12 +28,8 @@ func MountSSHFS(config config.VeshConfig) (ProcHandler, error) {
 		log.Println("Theoretical vault path:", config.VeraCryptVaultPath)
 	}
 
-	if _, err := os.Stat(config.VeraCryptVaultPath); err == nil {
-		log.Println("Vault already found - skipping sshfs mount")
-		return nil, nil
-	}
-	if _, err := os.Stat(config.SSHMountPath); err == nil {
-		log.Println("SSH already mounted - skipping")
+	if config.IsSSHFSMounted() {
+		log.Println("SSHFS is already mounted")
 		return nil, nil
 	}
 	handle := external.CreateSSHFS(config.ExtractSSHFSParams())
@@ -54,14 +50,8 @@ func MountVeraCrypt(config config.VeshConfig) (ProcHandler, error) {
 		log.Println("Theoretical repo path:", config.RepoPath)
 	}
 
-	parent_dir := filepath.Dir(config.RepoPath)
-	if _, err := os.Stat(parent_dir); err == nil {
-		if _, err := os.Stat(config.RepoPath); err == nil {
-			log.Println("Repo already found - skipping VeraCrypt mount")
-		} else {
-			log.Println("No repo but vera crypt folder found - creating bare repository")
-			utils.CreateBareRepo(config.RepoPath)
-		}
+	if config.IsVeraCryptMounted() {
+		log.Println("VeraCrypt is already mounted")
 		return nil, nil
 	}
 
@@ -120,11 +110,22 @@ func Main() error {
 		return err
 	}
 	defer DismountSSHFS(sshHandle)
+
+	err = config.CheckSSHFS()
+	if err != nil {
+		return err
+	}
+
 	veraHandle, err := MountVeraCrypt(config)
 	if err != nil {
 		return err
 	}
 	defer DismountVeraCrypt(veraHandle)
+
+	err = config.CheckVeraCrypt()
+	if err != nil {
+		return err
+	}
 
 	log.Println("---[Begin Main]---")
 	err = helper.Loop(config)

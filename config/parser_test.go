@@ -8,7 +8,7 @@ import (
 func TestParserAll(t *testing.T) {
 	input := "user@domain.com:repo.git"
 	c := parseAddress(input)
-	expected := EncConfig{
+	expected := VeshConfig{
 		SSHUser:    "user",
 		SSHAddress: "domain.com",
 		RepoPath:   "repo.git",
@@ -22,7 +22,7 @@ func TestParserAll(t *testing.T) {
 func TestParserAddPlusRepo(t *testing.T) {
 	input := "domain.com:repo.git"
 	c := parseAddress(input)
-	expected := EncConfig{
+	expected := VeshConfig{
 		SSHAddress: "domain.com",
 		RepoPath:   "repo.git",
 	}
@@ -35,7 +35,7 @@ func TestParserAddPlusRepo(t *testing.T) {
 func TestParserRepo(t *testing.T) {
 	input := "repo.git"
 	c := parseAddress(input)
-	expected := EncConfig{
+	expected := VeshConfig{
 		RepoPath: "repo.git",
 	}
 	if !reflect.DeepEqual(c, expected) {
