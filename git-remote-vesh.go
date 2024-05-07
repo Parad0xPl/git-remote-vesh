@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/Parad0xpl/git-remote-vesh/v2/config"
+	"github.com/Parad0xpl/git-remote-vesh/v2/debug"
 	"github.com/Parad0xpl/git-remote-vesh/v2/external"
 	"github.com/Parad0xpl/git-remote-vesh/v2/helper"
 	"github.com/Parad0xpl/git-remote-vesh/v2/utils"
@@ -24,9 +25,7 @@ type ProcHandler interface {
 func MountSSHFS(config config.VeshConfig) (ProcHandler, error) {
 	log.Println("---[SSHFS Mount]---")
 
-	if utils.IsDebug() {
-		log.Println("Theoretical vault path:", config.VeraCryptVaultPath)
-	}
+	debug.Println("Theoretical vault path:", config.VeraCryptVaultPath)
 
 	if config.IsSSHFSMounted() {
 		log.Println("SSHFS is already mounted")
@@ -46,9 +45,7 @@ func MountSSHFS(config config.VeshConfig) (ProcHandler, error) {
 func MountVeraCrypt(config config.VeshConfig) (ProcHandler, error) {
 	log.Println("---[VeraCrypt Mount]---")
 
-	if utils.IsDebug() {
-		log.Println("Theoretical repo path:", config.RepoPath)
-	}
+	debug.Println("Theoretical repo path:", config.RepoPath)
 
 	if config.IsVeraCryptMounted() {
 		log.Println("VeraCrypt is already mounted")
@@ -65,9 +62,7 @@ func MountVeraCrypt(config config.VeshConfig) (ProcHandler, error) {
 		config.VeraCryptVaultPath = p
 	}
 
-	if utils.IsDebug() {
-		log.Println("VeraCrypt path:", config.VeraCryptVaultPath)
-	}
+	debug.Println("VeraCrypt path:", config.VeraCryptVaultPath)
 	handle := external.CreateVeraCrypt(config.ExtractVeraCryptParams())
 	err := handle.Start()
 	if err != nil {
@@ -79,16 +74,16 @@ func MountVeraCrypt(config config.VeshConfig) (ProcHandler, error) {
 
 // DismountSSHFS dismount SSHFS if proc handler is available
 func DismountSSHFS(handle ProcHandler) {
-	log.Println("---[SSHFS Dismount]---")
 	if handle != nil {
+		log.Println("---[SSHFS Dismount]---")
 		handle.Stop()
 	}
 }
 
 // DismountVeraCrypt dismount VeraCrypt if proc handler is available
 func DismountVeraCrypt(handle ProcHandler) {
-	log.Println("---[VeraCrypt Dismount]---")
 	if handle != nil {
+		log.Println("---[VeraCrypt Dismount]---")
 		handle.Stop()
 	}
 }
@@ -109,7 +104,11 @@ func Main() error {
 	if err != nil {
 		return err
 	}
-	defer DismountSSHFS(sshHandle)
+
+	utils.AddCleaning(func() error {
+		DismountSSHFS(sshHandle)
+		return nil
+	}, "SSHFS")
 
 	err = config.CheckSSHFS()
 	if err != nil {
@@ -120,7 +119,10 @@ func Main() error {
 	if err != nil {
 		return err
 	}
-	defer DismountVeraCrypt(veraHandle)
+	utils.AddCleaning(func() error {
+		DismountVeraCrypt(veraHandle)
+		return nil
+	}, "VeraCrypt")
 
 	err = config.CheckVeraCrypt()
 	if err != nil {
@@ -138,6 +140,9 @@ func Main() error {
 }
 
 func main() {
+	utils.InitiateCleaningState()
+	singalHandler()
+	defer utils.CleanStack()
 	if err := Main(); err != nil {
 		log.Fatal(err)
 	}

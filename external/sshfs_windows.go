@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/Parad0xpl/git-remote-vesh/v2/config"
+	"github.com/Parad0xpl/git-remote-vesh/v2/debug"
 	"github.com/Parad0xpl/git-remote-vesh/v2/utils"
 )
 
@@ -103,7 +104,10 @@ func (s *SshfsWinHandle) Start() error {
 
 func (s *SshfsWinHandle) Stop() error {
 	if s.cmd.Process != nil {
+		debug.Println("Killing SSHFS process")
 		s.cmd.Process.Kill()
+	} else {
+		debug.Println("SSHFS Process is niy avauable")
 	}
 	return nil
 }
