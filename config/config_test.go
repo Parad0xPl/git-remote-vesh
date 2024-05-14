@@ -28,3 +28,28 @@ func TestConfigAbsolutePaths(t *testing.T) {
 		}
 	}
 }
+
+func TestMerge(t *testing.T) {
+	baseConfig := VeshConfig{
+		SSHPort: 1,
+		SSHUser: "test",
+	}
+
+	defaults := VeshConfig{
+		SSHAddress: "address",
+		SSHPort:    22,
+	}
+
+	output := mergeConfig(baseConfig, defaults)
+
+	if output.SSHPort != 1 {
+		t.Errorf("Setted property SSHPort overwritten")
+	}
+	if output.SSHUser != "test" {
+		t.Errorf("Setted property SSHUser overwritten")
+	}
+	if output.SSHAddress != "address" {
+		t.Errorf("Unsetted property SSHAddress is not set")
+	}
+
+}

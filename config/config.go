@@ -4,9 +4,11 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"strings"
 
+	"github.com/Parad0xpl/git-remote-vesh/v2/debug"
 	"github.com/Parad0xpl/git-remote-vesh/v2/utils"
 	"gopkg.in/yaml.v2"
 )
@@ -93,6 +95,76 @@ func absolutePath(path string) string {
 	return filepath.Clean(p)
 }
 
+// Merge one config into another replacing only empty fields
+func mergeConfig(to, from VeshConfig) VeshConfig {
+	valueTo := reflect.ValueOf(&to)
+	valueFrom := reflect.ValueOf(from)
+
+	fields := reflect.VisibleFields(valueFrom.Type())
+	numberOfFields := len(fields)
+
+	for i := 0; i < numberOfFields; i++ {
+		leftValue := valueTo.Elem().FieldByIndex([]int{i})
+		if leftValue.IsZero() {
+			rightValue := valueFrom.FieldByIndex([]int{i})
+			leftValue.Set(rightValue)
+		}
+	}
+
+	return to
+}
+
+// Read given file and parse it as a VeshConfig
+func readConfig(configPath string) (VeshConfig, error) {
+	var config VeshConfig
+	configRaw, err := os.ReadFile(configPath)
+	if err != nil {
+		return VeshConfig{}, err
+	} else {
+		yaml.Unmarshal(configRaw, &config)
+	}
+	return config, nil
+}
+
+// Return config based on test variables:
+// VESH_TEST_ADDRESS
+// VESH_TEST_REMOTENAME
+// VESH_TEST_CONFIGPATH
+func testConfig() VeshConfig {
+	config := parseAddress(os.Getenv("VESH_TEST_ADDRESS"))
+	config.RemoteName = os.Getenv("VESH_TEST_REMOTENAME")
+	configPath := os.Getenv("VESH_TEST_CONFIGPATH")
+	fileConfig, _ := readConfig(configPath)
+	return mergeConfig(fileConfig, config)
+}
+
+// Return config parsed from arguments
+func argumentConfig() VeshConfig {
+	config := parseAddress(os.Args[2])
+	config.RemoteName = os.Args[1]
+	return config
+
+}
+
+// Return config optionaly putted inside users home directory. Usefull
+// if SSH has custom unencrypted key for easier access
+func homeConfig() VeshConfig {
+	homePath, err := os.UserHomeDir()
+	if err != nil {
+		debug.Println("Can't get home path: ", err)
+		return VeshConfig{}
+	}
+
+	config, _ := readConfig(filepath.Join(homePath, ConfigFileName))
+	return config
+}
+
+// Return config inserted in CWD
+func localConfig() VeshConfig {
+	config, _ := readConfig(ConfigFileName)
+	return config
+}
+
 // GetConfig return parsed config from all sources. It is based on defaultConfig()
 // and filled with custom populated properties.
 //
@@ -101,43 +173,14 @@ func absolutePath(path string) string {
 // VESH_TEST_REMOTENAME
 // VESH_TEST_CONFIGPATH
 func GetConfig() (VeshConfig, error) {
-	address := os.Getenv("VESH_TEST_ADDRESS")
-	if address == "" {
-		address = os.Args[2]
-	}
-	config := parseAddress(address)
+	var config VeshConfig
 	config.LocalRepoPath = getLocalRepo()
-	defaultConfig := defaultConfig()
 
-	remote_name := os.Getenv("VESH_TEST_REMOTENAME")
-	if remote_name == "" {
-		remote_name = os.Args[1]
-	}
-	config.RemoteName = remote_name
-
-	configPath := os.Getenv("VESH_TEST_CONFIGPATH")
-	if configPath == "" {
-		configPath = ConfigFileName
-	}
-	config_raw, err := os.ReadFile(configPath)
-	if err != nil {
-	} else {
-		yaml.Unmarshal(config_raw, &config)
-	}
-
-	// Default
-	if config.SSHPort == 0 {
-		config.SSHPort = defaultConfig.SSHPort
-	}
-	if config.SSHMountPath == "" {
-		config.SSHMountPath = defaultConfig.SSHMountPath
-	}
-	if config.VeraCryptMountPath == "" {
-		config.VeraCryptMountPath = defaultConfig.VeraCryptMountPath
-	}
-	if config.VeraCryptVaultPath == "" {
-		config.VeraCryptVaultPath = defaultConfig.VeraCryptVaultPath
-	}
+	config = mergeConfig(config, testConfig())
+	config = mergeConfig(config, argumentConfig())
+	config = mergeConfig(config, localConfig())
+	config = mergeConfig(config, homeConfig())
+	config = mergeConfig(config, defaultConfig())
 
 	// Ensure that mount path for Veracrypt has correct form for windows
 	var mountPath string
