@@ -10,8 +10,8 @@ import (
 
 // IsVeraCryptMounted check if VeraCrypt is already mounted. TODO: Check for linux alternative
 func (config *VeshConfig) IsVeraCryptMounted() bool {
-	parent_dir := filepath.Dir(config.RepoPath)
-	if _, err := os.Stat(parent_dir); err == nil {
+	parentDir := filepath.Dir(config.RepoPath)
+	if _, err := os.Stat(parentDir); err == nil {
 		return true
 	}
 

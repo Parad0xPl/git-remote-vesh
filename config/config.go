@@ -60,9 +60,9 @@ func getLocalRepo() string {
 	if local == "" {
 		log.Println("WARNING: No local dir path")
 	}
-	absolute_path, err := filepath.Abs(local)
+	absolutePath, err := filepath.Abs(local)
 	if err == nil {
-		return absolute_path
+		return absolutePath
 	}
 	return local
 }
