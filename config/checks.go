@@ -3,29 +3,9 @@ package config
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/Parad0xpl/git-remote-vesh/v2/utils"
 )
-
-// IsVeraCryptMounted check if VeraCrypt is already mounted. TODO: Check for linux alternative
-func (config *VeshConfig) IsVeraCryptMounted() bool {
-	parentDir := filepath.Dir(config.RepoPath)
-	if _, err := os.Stat(parentDir); err == nil {
-		return true
-	}
-
-	return false
-}
-
-// IsVeraCryptMounted check if SSHFS is already mounted. TODO: Check for linux alternative
-func (config *VeshConfig) IsSSHFSMounted() bool {
-	if _, err := os.Stat(config.SSHMountPath); err == nil {
-		return true
-	}
-
-	return false
-}
 
 // IsVeraCryptVaultAvailable check if VeraCrypt file is in place. Check for exsitance,
 // filetype and signature.

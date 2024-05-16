@@ -41,6 +41,8 @@ func (s *VeraCryptHandle) Start() error {
 			s.mountPath,
 		}
 
+	os.MkdirAll(s.mountPath, 0o700)
+
 	cmd := exec.Command(path, arguments...)
 	err := cmd.Run()
 	// log.Printf("Output: %s\n", string(output))
