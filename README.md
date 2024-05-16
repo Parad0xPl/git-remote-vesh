@@ -1,4 +1,4 @@
-# Git Enc
+# Vesh
 Simple tool for remote SSH repository inside VeraCrypt container
 
 ## Dependency
