@@ -57,9 +57,7 @@ func CreateSSHFS(config config.SSHFSParams) *SshfsWinHandle {
 		"-ofollow_symlinks",
 	}
 
-	if utils.IsDebug() {
-		log.Println("Arguments for sshfs:", arguments)
-	}
+	debug.Println("Arguments for sshfs:", arguments)
 
 	if identFile != "" {
 		arguments = append(arguments,

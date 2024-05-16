@@ -4,21 +4,18 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
 
-	"github.com/Parad0xpl/git-remote-vesh/v2/utils"
+	"github.com/Parad0xpl/git-remote-vesh/v2/debug"
 )
 
 // gitCmdPrepare prepare exec.Cmd for running git command in remote repository
 // with given arguments. It sets GIT_DIR envirenment variable and return ready
 // to run.
 func (h *helperContext) gitCmdPrepare(args ...string) *exec.Cmd {
-	if utils.IsDebug() {
-		log.Println("Git command:", args)
-	}
+	debug.Println("Git command:", args)
 	cmd := exec.Command("git", args...)
 	envs := cmd.Environ()
 	envs = append(envs, fmt.Sprintf("GIT_DIR=%s", h.repoPath))
@@ -55,9 +52,7 @@ func ensureFile(path string) error {
 		}
 		return err
 	}
-	if utils.IsDebug() {
-		log.Println("Created file:", path)
-	}
+	debug.Println("Created file:", path)
 	file.Close()
 	return nil
 }
@@ -68,16 +63,12 @@ func (ctx *helperContext) readCmd() ([]string, error) {
 	commandLine, err := ctx.reader.ReadString('\n')
 	if err != nil {
 		if err == io.EOF {
-			if utils.IsDebug() {
-				log.Printf("Got EOF - ignoring?")
-			}
+			debug.Printf("Got EOF - ignoring?")
 			return nil, nil
 		}
 		return nil, fmt.Errorf("can't read next line of communication: %v", err)
 	}
-	if utils.IsDebug() {
-		log.Printf("Got command '%s'\n", commandLine)
-	}
+	debug.Printf("Got command '%s'\n", commandLine)
 
 	commandLineParts := strings.SplitN(commandLine, " ", 2)
 	return commandLineParts, nil

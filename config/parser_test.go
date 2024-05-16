@@ -23,6 +23,7 @@ func TestParserAddPlusRepo(t *testing.T) {
 	input := "domain.com:repo.git"
 	c := parseAddress(input)
 	expected := VeshConfig{
+		SSHUser:    "",
 		SSHAddress: "domain.com",
 		RepoPath:   "repo.git",
 	}
@@ -36,7 +37,9 @@ func TestParserRepo(t *testing.T) {
 	input := "repo.git"
 	c := parseAddress(input)
 	expected := VeshConfig{
-		RepoPath: "repo.git",
+		SSHUser:    "",
+		SSHAddress: "",
+		RepoPath:   "repo.git",
 	}
 	if !reflect.DeepEqual(c, expected) {
 		t.Fatalf("Parsed value doesn't match\n---Value---\n%v\n---Expected---\n%v",

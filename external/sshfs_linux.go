@@ -23,6 +23,8 @@ func getSSHFSPath() string {
 	return getPathOrDef("sshfs", defaultSSHFSPath)
 }
 
+// Create SSHFS connection handle for current config. Return handle
+// that can start and stop resource
 func CreateSSHFS(config config.SSHFSParams) *SshfsWinHandle {
 	sshLogin := formatSSHConnection(&config)
 	mountPath := config.SSHMountPath

@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/Parad0xpl/git-remote-vesh/v2/debug"
-	"github.com/Parad0xpl/git-remote-vesh/v2/utils"
 	"gopkg.in/yaml.v2"
 )
 
@@ -71,9 +70,7 @@ func getLocalRepo() string {
 // local config
 func (c *VeshConfig) GetVeshConfigDir() string {
 	p := filepath.Join(c.LocalRepoPath, "vesh", c.RemoteName)
-	if utils.IsDebug() {
-		log.Println("Vesh path:", p)
-	}
+	debug.Println("Vesh path:", p)
 
 	return p
 }

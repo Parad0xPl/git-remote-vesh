@@ -1,10 +1,9 @@
 package config
 
 import (
-	"log"
 	"strings"
 
-	"github.com/Parad0xpl/git-remote-vesh/v2/utils"
+	"github.com/Parad0xpl/git-remote-vesh/v2/debug"
 )
 
 // parser handles logic of extracting connection properties from URL
@@ -53,10 +52,9 @@ func (p *parser) parseChar(c rune) {
 func parseAddress(address string) VeshConfig {
 	address = strings.TrimPrefix(address, "vesh://")
 
-	if utils.IsDebug() {
-		log.Println("---Parsing address---")
-		log.Println("Address:", address)
-	}
+	debug.Println("---Parsing address---")
+	debug.Println("Address:", address)
+
 	output := VeshConfig{}
 	parser := parser{}
 
