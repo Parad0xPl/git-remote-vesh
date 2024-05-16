@@ -9,6 +9,7 @@ import (
 	"os/exec"
 
 	"github.com/Parad0xpl/git-remote-vesh/v2/config"
+	"github.com/Parad0xpl/git-remote-vesh/v2/debug"
 	"github.com/Parad0xpl/git-remote-vesh/v2/utils"
 )
 
@@ -30,19 +31,24 @@ func CreateSSHFS(config config.SSHFSParams) *SshfsWinHandle {
 	mountPath := config.SSHMountPath
 	port := fmt.Sprintf("-p %d", config.SSHPort)
 
+	debug.Println("SSHFS remote address:", sshLogin)
+	debug.Println("SSHFS mount path:", mountPath)
+
 	ident_file := config.SSHIdentityFile
+
+	os.MkdirAll(mountPath, 0o700)
 
 	arguments := []string{
 		sshLogin,
 		mountPath,
 		port,
-		"-o debug",
-		"-o loglevel=debug1",
-		"-o StrictHostKeyChecking=no",
-		"-o UserKnownHostsFile=/dev/null",
-		"-o large_read",
-		"-o kernel_cache",
-		"-o follow_symlinks",
+		"-ologlevel=debug1",
+		"-oStrictHostKeyChecking=no",
+		"-oUserKnownHostsFile=/dev/null",
+		"-okernel_cache",
+		"-ofollow_symlinks",
+		"-oidmap=user",
+		"-oallow_root",
 	}
 
 	if ident_file != "" {
@@ -68,6 +74,7 @@ func (s *SshfsWinHandle) Start() error {
 
 	if utils.IsDebug() {
 		log.Println("---SSHFS Start---")
+		log.Println("Arguments:", s.startArguments)
 		cmd.Stderr = os.Stderr
 		cmd.Stdout = os.Stderr
 	}

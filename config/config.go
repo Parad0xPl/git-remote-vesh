@@ -187,6 +187,8 @@ func GetConfig() (VeshConfig, error) {
 		} else {
 			mountPath = string(config.VeraCryptMountPath[0]) + ":/"
 		}
+	} else {
+		mountPath = config.VeraCryptMountPath
 	}
 	config.RepoPath = filepath.Join(mountPath, config.RepoPath)
 

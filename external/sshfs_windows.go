@@ -105,7 +105,7 @@ func (s *SshfsWinHandle) Stop() error {
 		debug.Println("Killing SSHFS process")
 		s.cmd.Process.Kill()
 	} else {
-		debug.Println("SSHFS Process is niy avauable")
+		debug.Println("SSHFS Process is not available")
 	}
 	return nil
 }

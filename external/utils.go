@@ -3,6 +3,7 @@ package external
 import (
 	"os/exec"
 	"path/filepath"
+	"runtime"
 
 	"github.com/Parad0xpl/git-remote-vesh/v2/config"
 )
@@ -39,6 +40,8 @@ func formatSSHConnection(config *config.SSHFSParams) string {
 
 	if SSHPath != "" {
 		output = output + ":" + SSHPath
+	} else if runtime.GOOS == "linux" {
+		output = output + ":"
 	}
 
 	return output

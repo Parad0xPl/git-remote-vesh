@@ -144,6 +144,7 @@ func main() {
 	singalHandler()
 	defer utils.CleanStack()
 	if err := Main(); err != nil {
+		utils.CleanStack()
 		log.Fatal(err)
 	}
 }
