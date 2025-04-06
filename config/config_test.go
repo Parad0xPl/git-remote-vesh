@@ -6,6 +6,8 @@ import (
 	"testing"
 )
 
+// TestConfigAbsolutePaths verifies that all paths in the configuration are absolute.
+// It sets up environment variables, retrieves the configuration, and checks the paths.
 func TestConfigAbsolutePaths(t *testing.T) {
 	os.Setenv("VESH_TEST_CONFIGPATH", "test/config")
 	os.Setenv("VESH_TEST_REMOTENAME", "test.git")
@@ -29,6 +31,9 @@ func TestConfigAbsolutePaths(t *testing.T) {
 	}
 }
 
+// TestMerge ensures that the mergeConfig function correctly merges two configurations.
+// It verifies that explicitly set properties in the base configuration are not overwritten
+// and that unset properties are populated from the defaults.
 func TestMerge(t *testing.T) {
 	baseConfig := VeshConfig{
 		SSHPort: 1,

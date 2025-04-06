@@ -2,7 +2,7 @@
 
 package config
 
-// defaultConfig return default config related to given platform
+// defaultConfig returns the default configuration for the Linux platform.
 func defaultConfig() VeshConfig {
 	return VeshConfig{
 		SSHPort:            22,

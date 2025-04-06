@@ -6,11 +6,10 @@ import (
 	"strings"
 )
 
-// import_ handles all logic of importing files from remote repository to
-// local. It needs to get ref that was passed on the first life.
+// import_ handles the logic of importing files from a remote repository to
+// the local repository. It requires the ref passed on the first line.
 func (h *helperContext) import_(f string) error {
-	// We need to collect each line of "import {refname}" which will
-	// be passed to the `git fast-export`
+	// Collect each line of "import {refname}" to pass to `git fast-export`.
 	refs := make([]string, 0)
 	for {
 		log.Printf("Importing file: %s", f)
@@ -43,7 +42,7 @@ func (h *helperContext) import_(f string) error {
 	log.Println(args)
 	err := h.gitExecStdout(args...)
 	if err != nil {
-		return fmt.Errorf("import fail: %v", err)
+		return fmt.Errorf("import failed: %v", err)
 	}
 
 	fmt.Printf("done\n")

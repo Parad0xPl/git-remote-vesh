@@ -14,6 +14,7 @@ type mountInfoData struct {
 	path string
 }
 
+// getMountinfoData retrieves mount information from /proc/self/mountinfo.
 func getMountinfoData() ([]mountInfoData, error) {
 	data, err := os.ReadFile("/proc/self/mountinfo")
 	if err != nil {
@@ -36,7 +37,7 @@ func getMountinfoData() ([]mountInfoData, error) {
 	return mountData, nil
 }
 
-// IsVeraCryptMounted check if VeraCrypt is already mounted.
+// IsVeraCryptMounted checks if VeraCrypt is already mounted.
 func (config *VeshConfig) IsVeraCryptMounted() bool {
 	mountData, err := getMountinfoData()
 	if err != nil {
@@ -52,7 +53,7 @@ func (config *VeshConfig) IsVeraCryptMounted() bool {
 	return false
 }
 
-// IsVeraCryptMounted check if SSHFS is already mounted.
+// IsSSHFSMounted checks if SSHFS is already mounted.
 func (config *VeshConfig) IsSSHFSMounted() bool {
 	mountData, err := getMountinfoData()
 	if err != nil {

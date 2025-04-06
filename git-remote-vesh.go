@@ -14,14 +14,14 @@ import (
 	"github.com/Parad0xpl/git-remote-vesh/v2/utils"
 )
 
-// ProcHandler represent process that can be started and stoped asynchronously
+// ProcHandler represents a process that can be started and stopped asynchronously
 type ProcHandler interface {
 	Start() error
 	Stop() error
 }
 
-// MountSSHFS try to mount SSHFS resources with data from config. If VeraCrypt
-// file is already accessible it is skipped.
+// MountSSHFS attempts to mount SSHFS resources using data from the config. If the VeraCrypt
+// file is already accessible, it is skipped.
 func MountSSHFS(config config.VeshConfig) (ProcHandler, error) {
 	log.Println("---[SSHFS Mount]---")
 
@@ -34,14 +34,14 @@ func MountSSHFS(config config.VeshConfig) (ProcHandler, error) {
 	handle := external.CreateSSHFS(config.ExtractSSHFSParams())
 	err := handle.Start()
 	if err != nil {
-		return nil, fmt.Errorf("can't mount sshfs: %e", err)
+		return nil, fmt.Errorf("can't mount sshfs: %w", err)
 	}
 
 	return handle, nil
 }
 
-// MountVeraCrypt try to mount VeraCrypt container specified in the config. If
-// it is mounted already it is skipped.
+// MountVeraCrypt attempts to mount the VeraCrypt container specified in the config. If
+// it is already mounted, it is skipped.
 func MountVeraCrypt(config config.VeshConfig) (ProcHandler, error) {
 	log.Println("---[VeraCrypt Mount]---")
 
@@ -72,7 +72,7 @@ func MountVeraCrypt(config config.VeshConfig) (ProcHandler, error) {
 	return handle, nil
 }
 
-// DismountSSHFS dismount SSHFS if proc handler is available
+// DismountSSHFS dismounts SSHFS if the process handler is available.
 func DismountSSHFS(handle ProcHandler) {
 	if handle != nil {
 		log.Println("---[SSHFS Dismount]---")
@@ -80,7 +80,7 @@ func DismountSSHFS(handle ProcHandler) {
 	}
 }
 
-// DismountVeraCrypt dismount VeraCrypt if proc handler is available
+// DismountVeraCrypt dismounts VeraCrypt if the process handler is available.
 func DismountVeraCrypt(handle ProcHandler) {
 	if handle != nil {
 		log.Println("---[VeraCrypt Dismount]---")
@@ -88,7 +88,7 @@ func DismountVeraCrypt(handle ProcHandler) {
 	}
 }
 
-// Main realise base logic of application
+// Main implements the base logic of the application.
 func Main() error {
 	if len(os.Args) != 3 {
 		log.Printf("Usage: %s <remote name> <remote address>\n", os.Args[0])
@@ -141,7 +141,7 @@ func Main() error {
 
 func main() {
 	utils.InitiateCleaningState()
-	singalHandler()
+	signalHandler()
 	defer utils.CleanStack()
 	if err := Main(); err != nil {
 		utils.CleanStack()

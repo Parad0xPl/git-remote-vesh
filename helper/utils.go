@@ -11,9 +11,8 @@ import (
 	"github.com/Parad0xpl/git-remote-vesh/v2/debug"
 )
 
-// gitCmdPrepare prepare exec.Cmd for running git command in remote repository
-// with given arguments. It sets GIT_DIR envirenment variable and return ready
-// to run.
+// gitCmdPrepare prepares an exec.Cmd for running a Git command in the remote repository
+// with the given arguments. It sets the GIT_DIR environment variable and returns a ready-to-run command.
 func (h *helperContext) gitCmdPrepare(args ...string) *exec.Cmd {
 	debug.Println("Git command:", args)
 	cmd := exec.Command("git", args...)
@@ -23,13 +22,13 @@ func (h *helperContext) gitCmdPrepare(args ...string) *exec.Cmd {
 	return cmd
 }
 
-// gitExec execute git with given arguments. Return output as bytes array
+// gitExec executes a Git command with the given arguments and returns the output as a byte array.
 func (h *helperContext) gitExec(args ...string) ([]byte, error) {
 	cmd := h.gitCmdPrepare(args...)
 	return cmd.Output()
 }
 
-// gitExecStdout execute git command with output redirected to Stderr and Stdout
+// gitExecStdout executes a Git command with output redirected to Stderr and Stdout.
 func (h *helperContext) gitExecStdout(args ...string) error {
 	cmd := h.gitCmdPrepare(args...)
 	cmd.Stderr = os.Stderr
@@ -37,13 +36,13 @@ func (h *helperContext) gitExecStdout(args ...string) error {
 	return cmd.Run()
 }
 
-// gitExecString execute git with given argument. Return output as string
+// gitExecString executes a Git command with the given arguments and returns the output as a string.
 func (h *helperContext) gitExecString(args ...string) (string, error) {
 	output, err := h.gitExec(args...)
 	return string(bytes.TrimSpace(output)), err
 }
 
-// ensureFile create file with given path it doesn't exists
+// ensureFile creates a file at the given path if it doesn't exist.
 func ensureFile(path string) error {
 	file, err := os.OpenFile(path, os.O_CREATE|os.O_EXCL, 0666)
 	if err != nil {
@@ -57,8 +56,8 @@ func ensureFile(path string) error {
 	return nil
 }
 
-// readCmd return one line of command taken from Stdin. Return splitted by space
-// slice of strings
+// readCmd reads one line of input from Stdin and splits it into a slice of strings.
+// It returns the split command or an error.
 func (ctx *helperContext) readCmd() ([]string, error) {
 	commandLine, err := ctx.reader.ReadString('\n')
 	if err != nil {
@@ -66,7 +65,7 @@ func (ctx *helperContext) readCmd() ([]string, error) {
 			debug.Printf("Got EOF - ignoring?")
 			return nil, nil
 		}
-		return nil, fmt.Errorf("can't read next line of communication: %v", err)
+		return nil, fmt.Errorf("can't read the next line of communication: %v", err)
 	}
 	debug.Printf("Got command '%s'\n", commandLine)
 

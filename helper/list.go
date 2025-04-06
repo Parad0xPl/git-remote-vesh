@@ -5,8 +5,8 @@ import (
 	"fmt"
 )
 
-// getRefs return slice of arrays where first string is object name and second
-// is refname
+// getRefs returns a slice of arrays where the first string is the object name
+// and the second is the ref name.
 func (h *helperContext) getRefs() ([][2]string, error) {
 	output, err := h.gitExec("for-each-ref",
 		"--format=%(objectname) %(refname)",
@@ -33,7 +33,7 @@ func (h *helperContext) getRefs() ([][2]string, error) {
 	return out, nil
 }
 
-// getHeadRef return ref of symbolic ref
+// getHeadRef returns the ref of a symbolic ref.
 func (h *helperContext) getHeadRef(name string) (string, error) {
 	output, err := h.gitExec("symbolic-ref", name)
 	if err != nil {
@@ -43,8 +43,8 @@ func (h *helperContext) getHeadRef(name string) (string, error) {
 	return string(bytes.TrimSpace(output)), nil
 }
 
-// transformSlice from slices of pairs to map. Needed for faster translation of
-// names
+// transformSlice converts a slice of pairs into a map. This is needed for faster
+// translation of names.
 func transformSlice(m [][2]string) map[string]string {
 	o := make(map[string]string, len(m))
 
@@ -56,7 +56,7 @@ func transformSlice(m [][2]string) map[string]string {
 	return o
 }
 
-// list handle logic of list. Print all references of remote repo
+// list handles the logic of listing. Prints all references of the remote repository.
 func (h *helperContext) list() error {
 	refs, err := h.getRefs()
 	if err != nil {

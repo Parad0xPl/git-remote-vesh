@@ -26,6 +26,8 @@ func getSSHFSPath() string {
 	return getPathOrDef("sshfs", defaultSSHFSPath)
 }
 
+// CreateSSHFS creates an SSHFS connection handle for the current configuration.
+// Returns a handle that can start and stop the resource.
 func CreateSSHFS(config config.SSHFSParams) *SshfsWinHandle {
 	sshLogin := formatSSHConnection(&config)
 	if config.SSHRemotePath == "" {
@@ -71,6 +73,7 @@ func CreateSSHFS(config config.SSHFSParams) *SshfsWinHandle {
 	}
 }
 
+// Start initiates the SSHFS connection using the provided configuration.
 func (s *SshfsWinHandle) Start() error {
 	path := getSSHFSPath()
 
@@ -100,6 +103,7 @@ func (s *SshfsWinHandle) Start() error {
 	return nil
 }
 
+// Stop terminates the SSHFS connection and kills the associated process.
 func (s *SshfsWinHandle) Stop() error {
 	if s.cmd.Process != nil {
 		debug.Println("Killing SSHFS process")

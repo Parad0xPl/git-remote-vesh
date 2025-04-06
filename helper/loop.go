@@ -9,19 +9,17 @@ import (
 	"github.com/Parad0xpl/git-remote-vesh/v2/config"
 )
 
-// capabilities return capabilites handles by our handler
+// capabilities prints the capabilities handled by our helper.
 func (h *helperContext) capabilities() {
-	// log.Println("--Printing cap--")
 	fmt.Println("import")
 	fmt.Println("export")
 	fmt.Printf("refspec %s\n", h.headRefspec)
 	fmt.Printf("*import-marks %s\n", h.gitmarks)
 	fmt.Printf("*export-marks %s\n", h.gitmarks)
 	fmt.Println()
-	// log.Println("--Printed cap--")
 }
 
-// helperContext gather data required between all function calls
+// helperContext gathers data required between all function calls.
 type helperContext struct {
 	headRefspec string
 	repoPath    string
@@ -31,7 +29,7 @@ type helperContext struct {
 	reader *bufio.Reader
 }
 
-// prepare create all neceserry files inside local repo
+// prepare creates all necessary files inside the local repository.
 func prepare(config config.VeshConfig) (helperContext, error) {
 	veshDir := config.GetVeshConfigDir()
 	ctx := helperContext{
@@ -41,7 +39,6 @@ func prepare(config config.VeshConfig) (helperContext, error) {
 		veshmarks:   filepath.Join(veshDir, "veshgit.marks"),
 	}
 
-	// log.Printf("Repo path: %s\n", ctx.repoPath)
 	err := os.MkdirAll(veshDir, 0755)
 	if err != nil {
 		return helperContext{}, err
@@ -59,18 +56,16 @@ func prepare(config config.VeshConfig) (helperContext, error) {
 	return ctx, nil
 }
 
-// Loop contain full logic of handling git communication. Most of logic is
-// based on Alec Newman article (https://rovaughn.github.io/2015-2-9.html)
+// Loop contains the full logic for handling Git communication. Most of the logic
+// is based on Alec Newman's article (https://rovaughn.github.io/2015-2-9.html).
 func Loop(config config.VeshConfig) error {
 	ctx, err := prepare(config)
 	if err != nil {
-		return fmt.Errorf("can't prepare vesh contex: %v", err)
+		return fmt.Errorf("can't prepare vesh context: %v", err)
 	}
 
-	// log.Println("---[Main helper loop]---")
 	ctx.reader = bufio.NewReader(os.Stdin)
 	for {
-		// log.Println("--- loop run ---")
 		commandLineParts, err := ctx.readCmd()
 		if err != nil {
 			return err
@@ -80,7 +75,6 @@ func Loop(config config.VeshConfig) error {
 		}
 
 		command := commandLineParts[0]
-		// log.Printf("command first part '%s'\n", command)
 
 		if command == "\n" {
 			return nil
@@ -93,7 +87,7 @@ func Loop(config config.VeshConfig) error {
 		} else if command == "import" {
 			ctx.import_(commandLineParts[1])
 		} else {
-			return fmt.Errorf("unkown command '%s' from git", command)
+			return fmt.Errorf("unknown command '%s' from Git", command)
 		}
 	}
 }

@@ -6,7 +6,7 @@ import (
 	"github.com/Parad0xpl/git-remote-vesh/v2/debug"
 )
 
-// parser handles logic of extracting connection properties from URL
+// parser handles the logic of extracting connection properties from a URL.
 type parser struct {
 	buffer string
 
@@ -17,7 +17,7 @@ type parser struct {
 	user    string
 }
 
-// isSpecialChar check if given character is a special character inside URL
+// isSpecialChar checks if the given character is a special character inside the URL.
 func (p *parser) isSpecialChar(c rune) bool {
 	if c == '@' && !p.userFlag {
 		p.userFlag = true
@@ -32,14 +32,14 @@ func (p *parser) isSpecialChar(c rune) bool {
 	return false
 }
 
-// getBuffer return current state of buffer and reset it to empty string.
+// getBuffer returns the current state of the buffer and resets it to an empty string.
 func (p *parser) getBuffer() string {
 	o := p.buffer
 	p.buffer = ""
 	return o
 }
 
-// parseChar add non special character to the buffer
+// parseChar adds a non-special character to the buffer.
 func (p *parser) parseChar(c rune) {
 	isSC := p.isSpecialChar(c)
 
@@ -48,7 +48,7 @@ func (p *parser) parseChar(c rune) {
 	}
 }
 
-// parseAddress return VeshConfig extracted from the URL of repo
+// parseAddress returns a VeshConfig extracted from the repository URL.
 func parseAddress(address string) VeshConfig {
 	address = strings.TrimPrefix(address, "vesh://")
 

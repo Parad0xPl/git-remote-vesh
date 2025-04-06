@@ -5,9 +5,9 @@ import (
 	"sync"
 )
 
-// cleaningStack is a stack which register cleaning functions and
-// execute them on application closing. It gives additional ways t clean
-// and close external programs in case of signal like SIGINT or SIGINT.
+// cleaningStack is a stack that registers cleaning functions and
+// executes them on application closure. It provides a mechanism to clean
+// and close external programs in case of signals like SIGINT or SIGTERM.
 type cleaningStack struct {
 	m sync.Mutex
 
@@ -26,13 +26,13 @@ type cleaningRecord struct {
 	name string
 }
 
-// CleaningFunction should be a funtion that close external program or
-// handle logic of cleaning/restoring broken resources.
+// CleaningFunction should be a function that closes external programs or
+// handles the logic of cleaning/restoring broken resources.
 type CleaningFunction func() error
 
 var cleaningStateGlobal cleaningStack
 
-// InitateCleaningState initiate global cleaning state.
+// InitiateCleaningState initializes the global cleaning state.
 func InitiateCleaningState() {
 	cleaningStateGlobal.m.Lock()
 	defer cleaningStateGlobal.m.Unlock()
@@ -45,7 +45,7 @@ func InitiateCleaningState() {
 	cleaningStateGlobal.stack = make([]cleaningRecord, 10)
 }
 
-// AddCleaning push pointer of cleaning function to the stack
+// AddCleaning pushes a pointer to a cleaning function onto the stack.
 func AddCleaning(f CleaningFunction, name string) {
 	cleaningStateGlobal.m.Lock()
 	defer cleaningStateGlobal.m.Unlock()
@@ -63,12 +63,12 @@ func AddCleaning(f CleaningFunction, name string) {
 	}
 }
 
-// Set name of given id task
+// SetName sets the name of a given task by its ID.
 func SetName(id int, name string) {
 	cleaningStateGlobal.stack[id].name = name
 }
 
-// CleanStack execute each registered function in LIFO order
+// CleanStack executes each registered function in LIFO order.
 func CleanStack() {
 	cleaningStateGlobal.m.Lock()
 	defer cleaningStateGlobal.m.Unlock()
@@ -81,7 +81,7 @@ func CleanStack() {
 	for i := cleaningStateGlobal.nextId - 1; i >= 0; i-- {
 		err := cleaningStateGlobal.stack[i].f()
 		if err != nil {
-			log.Printf("Error while cleaning %s: %e\n", cleaningStateGlobal.stack[i].name, err)
+			log.Printf("Error while cleaning %s: %v\n", cleaningStateGlobal.stack[i].name, err)
 		}
 	}
 

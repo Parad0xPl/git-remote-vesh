@@ -7,12 +7,12 @@ import (
 	"github.com/Parad0xpl/git-remote-vesh/v2/utils"
 )
 
-// IsVeraCryptVaultAvailable check if VeraCrypt file is in place. Check for exsitance,
-// filetype and signature.
+// IsVeraCryptVaultAvailable checks if the VeraCrypt file is in place. It verifies the existence,
+// file type, and signature of the file.
 func (config *VeshConfig) IsVeraCryptVaultAvailable() error {
 	stat, err := os.Stat(config.VeraCryptVaultPath)
 	if err != nil {
-		return fmt.Errorf("can't stat vera crypt vault: %e", err)
+		return fmt.Errorf("can't stat VeraCrypt vault: %w", err)
 	}
 
 	if !stat.Mode().IsRegular() {
@@ -22,22 +22,22 @@ func (config *VeshConfig) IsVeraCryptVaultAvailable() error {
 	return nil
 }
 
-// CheckSSHFS do safe check if all things after sshfs mount are in place:
-// * SSHFS is realy mounter
-// * VeraCrypt Vault file exists and is a regular file
+// CheckSSHFS performs a safe check to ensure everything is in place after the SSHFS mount:
+// * SSHFS is properly mounted.
+// * The VeraCrypt vault file exists and is a regular file.
 func (config *VeshConfig) CheckSSHFS() error {
 	if !config.IsSSHFSMounted() {
 		return fmt.Errorf("SSHFS is not mounted properly")
 	}
 
 	if err := config.IsVeraCryptVaultAvailable(); err != nil {
-		return fmt.Errorf("problem with VeraCrypt vault: %e", err)
+		return fmt.Errorf("problem with VeraCrypt vault: %w", err)
 	}
 
 	return nil
 }
 
-// CheckVeraCrypt do safe check if all is properly mounted.
+// CheckVeraCrypt performs a safe check to ensure everything is properly mounted.
 func (config *VeshConfig) CheckVeraCrypt() error {
 	if !config.IsVeraCryptMounted() {
 		return fmt.Errorf("VeraCrypt is not mounted properly")
@@ -45,12 +45,12 @@ func (config *VeshConfig) CheckVeraCrypt() error {
 
 	stat, err := os.Stat(config.RepoPath)
 	if err != nil {
-		if !os.IsExist(err) {
+		if os.IsNotExist(err) {
 			utils.CreateBareRepo(config.RepoPath)
 			return nil
 		}
 
-		return fmt.Errorf("problem with repo: %e", err)
+		return fmt.Errorf("problem with repo: %w", err)
 	}
 
 	if !stat.IsDir() {

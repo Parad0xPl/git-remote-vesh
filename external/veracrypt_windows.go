@@ -10,6 +10,7 @@ import (
 	"github.com/Parad0xpl/git-remote-vesh/v2/config"
 )
 
+// VeraCryptWinHandle represents a handle for managing VeraCrypt operations on Windows.
 type VeraCryptWinHandle struct {
 	mountLetter string
 	vaultPath   string
@@ -17,10 +18,13 @@ type VeraCryptWinHandle struct {
 
 const defaultVeraCryptPath = "C:\\Program Files\\VeraCrypt\\VeraCrypt.exe"
 
+// getVeraCryptExecPath retrieves the path to the VeraCrypt executable,
+// or returns the default path if not found in the system PATH.
 func getVeraCryptExecPath() string {
 	return getPathOrDef("VeraCrypt", defaultVeraCryptPath)
 }
 
+// CreateVeraCrypt creates a VeraCrypt handle using the provided configuration.
 func CreateVeraCrypt(config config.VeraCryptParams) *VeraCryptWinHandle {
 	return &VeraCryptWinHandle{
 		mountLetter: config.VeraCryptMountPath,
@@ -28,6 +32,7 @@ func CreateVeraCrypt(config config.VeraCryptParams) *VeraCryptWinHandle {
 	}
 }
 
+// Start mounts the VeraCrypt volume using the provided configuration.
 func (s *VeraCryptWinHandle) Start() error {
 	path := getVeraCryptExecPath()
 
@@ -54,6 +59,7 @@ func (s *VeraCryptWinHandle) Start() error {
 	return nil
 }
 
+// Stop unmounts the VeraCrypt volume.
 func (s *VeraCryptWinHandle) Stop() error {
 	path := getVeraCryptExecPath()
 

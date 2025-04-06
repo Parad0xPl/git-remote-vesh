@@ -10,6 +10,7 @@ import (
 	"github.com/Parad0xpl/git-remote-vesh/v2/config"
 )
 
+// VeraCryptHandle represents a handle for managing VeraCrypt operations.
 type VeraCryptHandle struct {
 	mountPath string
 	vaultPath string
@@ -17,10 +18,13 @@ type VeraCryptHandle struct {
 
 const defautVeraCryptPath = "/usr/bin/veracrypt"
 
+// getVeraCryptExecPath retrieves the path to the VeraCrypt executable,
+// or returns the default path if not found in the system PATH.
 func getVeraCryptExecPath() string {
 	return getPathOrDef("veracrypt", defautVeraCryptPath)
 }
 
+// CreateVeraCrypt creates a VeraCrypt handle using the provided configuration.
 func CreateVeraCrypt(config config.VeraCryptParams) *VeraCryptHandle {
 	return &VeraCryptHandle{
 		mountPath: config.VeraCryptMountPath,
@@ -28,6 +32,7 @@ func CreateVeraCrypt(config config.VeraCryptParams) *VeraCryptHandle {
 	}
 }
 
+// Start mounts the VeraCrypt volume using the provided configuration.
 func (s *VeraCryptHandle) Start() error {
 	path := getVeraCryptExecPath()
 
@@ -52,6 +57,7 @@ func (s *VeraCryptHandle) Start() error {
 	return nil
 }
 
+// Stop unmounts the VeraCrypt volume.
 func (s *VeraCryptHandle) Stop() error {
 	path := getVeraCryptExecPath()
 

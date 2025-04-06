@@ -8,8 +8,8 @@ import (
 	"github.com/Parad0xpl/git-remote-vesh/v2/config"
 )
 
-// getPathOrDef tries to find path to the executable and
-// return default if not find in PATH
+// getPathOrDef tries to find the path to the executable and
+// returns the default path if not found in the system PATH.
 func getPathOrDef(name, defPath string) string {
 	path, _ := exec.LookPath(name)
 
@@ -26,7 +26,7 @@ func getPathOrDef(name, defPath string) string {
 	return path
 }
 
-// formatSSHConnection prepare ssh connection address from config
+// formatSSHConnection prepares the SSH connection address from the configuration.
 func formatSSHConnection(config *config.SSHFSParams) string {
 	SSHName := config.SSHUser
 	SSHHost := config.SSHAddress
