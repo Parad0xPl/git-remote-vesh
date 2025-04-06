@@ -64,6 +64,18 @@ or
 git clone vesh://example@example.com:sample.git
 ```
 
+## Config
+You can create `.veshconfig` config file inside of the working repo. It expects YAML file with structure as below.
+```yaml
+ssh_address: example.com
+ssh_user: exampleUser
+ssh_identity_file: /path/to/ssh/key
+ssh_mount_path: /ssh/mount/path
+ssh_remote_path: /path/on/remote/server/
+veracrypt_mount_path: /veracrypt/mount/path
+veracrypt_vault_path: /path/to/veracrypt/container
+```
+
 ## How It Works
 1. **Remote URL Parsing**:
    - The `vesh` protocol is used in the remote URL (e.g., `vesh://user@host:/path/to/repo.git`).
