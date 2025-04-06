@@ -27,7 +27,7 @@ Mostly based on an [article](https://rovaughn.github.io/2015-2-9.html) written b
    - On **Linux**, install [sshfs](https://github.com/libfuse/sshfs) and [VeraCrypt](https://www.veracrypt.fr/en/Home.html).
 2. Install this tool using Go:
    ```bash
-   go install github.com/Parad0xPl/vesh
+   go install github.com/Parad0xPl/git-remote-vesh
    ```
 3. Ensure that $GOBIN is in your $PATH and accessible:
    ```bash
