@@ -44,6 +44,26 @@ by the app is 'vesh.crypt'. It is also required to have a properly configured SS
 SSH account for vesh and an unencrypted key. By allowing VeraCrypt to cache the passkey to the container after the first usage, I
 can use it without any prompts.
 
+## Protocol URI
+```
+vesh://username@host:repo.git
+```
+- username - ssh username
+- host - ssh server
+- repo.git - name of the repo on the server
+
+If repo folder doesn't not exist, vesh will create empty bare repository
+
+## Example usage
+```bash
+git remote add origin vesh://example@example.com:sample.git
+git push origin master
+```
+or
+```bash
+git clone vesh://example@example.com:sample.git
+```
+
 ## How It Works
 1. **Remote URL Parsing**:
    - The `vesh` protocol is used in the remote URL (e.g., `vesh://user@host:/path/to/repo.git`).
