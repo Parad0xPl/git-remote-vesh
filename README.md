@@ -1,5 +1,10 @@
 # Vesh
+> [!NOTE]
+> This project was written for personal usage. I don't expect to improve it more. Use at your own risk.
+
 Vesh is a simple tool designed to manage remote Git repositories stored inside **VeraCrypt** containers. It provides seamless integration with Git by implementing a custom Git remote helper (`git-remote-vesh`) and supports remote access via **SSHFS**.
+
+Mostly based on an [article](https://rovaughn.github.io/2015-2-9.html) written by [Rovaughn](https://rovaughn.github.io/self.html).
 
 ## Features
 - **Encrypted Repository**: Securely store Git repositories in VeraCrypt containers.
@@ -20,11 +25,24 @@ Vesh is a simple tool designed to manage remote Git repositories stored inside *
 1. Install the required dependencies for your platform:
    - On **Windows**, install [SSHFS-Win](https://github.com/winfsp/sshfs-win) and [VeraCrypt](https://www.veracrypt.fr/en/Home.html).
    - On **Linux**, install [sshfs](https://github.com/libfuse/sshfs) and [VeraCrypt](https://www.veracrypt.fr/en/Home.html).
-2. Clone this repository:
+2. Install this tool using Go:
    ```bash
-   git clone https://github.com/yourusername/vesh.git
+   go install github.com/Parad0xPl/vesh
    ```
-3. Add the `git-remote-vesh` script to your system's PATH to make it accessible globally.
+3. Ensure that $GOBIN is in your $PATH and accessible:
+   ```bash
+   # On Windows
+   where git-remote-vesh
+   # On Linux
+   which git-remote-vesh
+   ```
+
+## Setup
+
+Before using Vesh, you need to create a VeraCrypt container and put it on a remote SSH location. The default name expected
+by the app is 'vesh.crypt'. It is also required to have a properly configured SSH key. On my personal setup, I have a separate
+SSH account for vesh and an unencrypted key. By allowing VeraCrypt to cache the passkey to the container after the first usage, I
+can use it without any prompts.
 
 ## How It Works
 1. **Remote URL Parsing**:
